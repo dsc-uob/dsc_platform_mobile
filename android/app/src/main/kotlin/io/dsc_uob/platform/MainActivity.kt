@@ -1,4 +1,4 @@
-package club.dscuob.dsc_platform
+package io.dsc_uob.platform
 
 import io.flutter.embedding.android.FlutterActivity
 
