@@ -51,10 +51,22 @@ class ValueNotFountInCacheException extends DSCPlatFormException {
         );
 }
 
-class NoUserLogin extends DSCPlatFormException {
-  NoUserLogin()
+class NoUserLoginException extends DSCPlatFormException {
+  NoUserLoginException()
       : super(
           code: 700,
           details: 'No user login.',
+        );
+}
+
+class UnknownException extends DSCPlatFormException {
+  UnknownException({
+    @required int code,
+    @required String details,
+  })  : assert(code != null),
+        assert(details != null),
+        super(
+          code: code,
+          details: details,
         );
 }

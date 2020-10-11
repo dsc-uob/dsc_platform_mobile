@@ -70,7 +70,7 @@ class CacheManager extends Manager {
     final userStringData = _prefe.getString(constant.CURRENT_USER_KEY);
     final token = await _storage.read(key: constant.TOKEN_KEY);
 
-    if (userStringData == null) throw NoUserLogin();
+    if (userStringData == null) throw NoUserLoginException();
 
     final userData = jsonDecode(userStringData);
     userData[constant.TOKEN_KEY] = token;

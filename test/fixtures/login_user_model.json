@@ -1,0 +1,15 @@
+{
+    "token": "296969697eeacfe87810589c75ad5eef6ba399fd",
+    "id": 3,
+    "username": "Test",
+    "email": "user@test.com",
+    "first_name": "Test",
+    "last_name": null,
+    "is_active": true,
+    "is_staff": false,
+    "is_superuser": false,
+    "gender": null,
+    "stage": null,
+    "last_login": null,
+    "bio": null
+}
