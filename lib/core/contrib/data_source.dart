@@ -45,19 +45,19 @@ abstract class RemoteDataSource extends DataSource {
 
   /// Final & private params.
   /// Used for authenticate requests.
-  final AuthenticationManager _authManager;
+  final AuthenticationManager authManager;
 
-  RemoteDataSource(this.http, this._authManager);
+  RemoteDataSource(this.http, this.authManager);
 
   @override
   Future<void> setup() async {
-    await _authManager.setup();
+    await authManager.setup();
 
-    if (!_authManager.isAuthenticated) throw NoUserLoginException();
+    if (!authManager.isAuthenticated) throw NoUserLoginException();
 
     http.options = BaseOptions(
       headers: {
-        'Authorization': _authManager.token,
+        'Authorization': authManager.token,
       },
     );
 

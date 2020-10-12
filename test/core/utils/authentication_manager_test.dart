@@ -53,9 +53,6 @@ void main() {
       expect(authManager.isAuthenticated, true);
       expect(authManager.token.isEmpty, false);
       expect(authManager.token, TOKEN_RESPONSE);
-      verify(authManager.setup());
     });
   });
-
-  test('Test if authentication success', () async {});
 }

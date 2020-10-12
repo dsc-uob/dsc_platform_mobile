@@ -20,6 +20,7 @@ class AuthenticationManager extends Manager {
 
   @override
   Future<void> setup() async {
+    if (_token != null) return;
     final token = await _cacheManager.loadSecureCache(TOKEN_KEY);
 
     if (token != null && token is String) {
@@ -27,6 +28,11 @@ class AuthenticationManager extends Manager {
     }
 
     prepared = true;
+  }
+
+  Future<void> update(String token) async {
+    _token = token;
+    return await _cacheManager.storeToken(token);
   }
 
   Future<void> dispose() {

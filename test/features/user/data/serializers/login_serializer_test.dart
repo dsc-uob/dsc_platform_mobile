@@ -3,14 +3,12 @@ import 'package:dsc_platform/features/user/domain/forms.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  UpdateForm form;
-  UpdateSerializer serializer;
+  LoginForm form;
+  LoginSerializer serializer;
 
   setUp(() {
-    form = UpdateForm(
-      username: 'Test',
-    );
-    serializer = UpdateSerializer(form);
+    form = LoginForm('Test', 'test1234');
+    serializer = LoginSerializer(form);
   });
 
   test('Test conver to map.', () {
@@ -18,6 +16,7 @@ void main() {
     final matcherMap = serializer.generateMap();
     final actualMap = {
       'username': 'Test',
+      'password': 'test1234',
     };
 
     expect(actualMap, matcherMap);
