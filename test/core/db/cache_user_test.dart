@@ -1,5 +1,5 @@
-import 'package:dsc_platform/core/bases/models.dart';
 import 'package:dsc_platform/core/constant.dart' as constant;
+import 'package:dsc_platform/core/db/models.dart';
 import 'package:dsc_platform/core/utils/cache_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';

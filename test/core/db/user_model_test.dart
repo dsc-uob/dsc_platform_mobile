@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:dsc_platform/core/bases/models.dart';
+import 'package:dsc_platform/core/db/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../fixtures/fixture_reader.dart';
@@ -27,5 +27,4 @@ void main() {
 
     expect(user, user2);
   });
-
 }

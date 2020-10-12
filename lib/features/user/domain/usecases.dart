@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../core/bases/entities.dart';
-import '../../../core/bases/use_case.dart';
+import '../../../core/db/entities.dart';
+import '../../../core/contrib/use_case.dart';
 import '../../../core/errors/failure.dart';
 import 'forms.dart';
 import 'repositories.dart';
@@ -35,13 +35,13 @@ class UpdateUser extends UseCase<User, UpdateForm> {
       repository.update(form);
 }
 
-class LogoutUser extends UseCase<User, NoParams> {
+class LogoutUser extends UseCase<void, NoParams> {
   final UserRepository repository;
 
   LogoutUser(this.repository);
 
   @override
-  Future<Either<Failure, User>> call([NoParams params]) => repository.logout();
+  Future<Either<Failure, void>> call([NoParams params]) => repository.logout();
 }
 
 class CurrentUser extends UseCase<User, NoParams> {

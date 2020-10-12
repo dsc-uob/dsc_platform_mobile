@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dsc_platform/core/contrib/use_case.dart';
 import 'package:dsc_platform/features/user/domain/repositories.dart';
 import 'package:dsc_platform/features/user/domain/usecases.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,12 +20,12 @@ void main() {
     'Test logout user.',
     () async {
       when(repository.logout()).thenAnswer(
-        (_) async => Right(any),
+        (_) async => Right(0),
       );
 
-      await logoutUser();
+      await logoutUser(NoParams());
 
-      verifyNever(repository.logout());
+      verify(repository.logout());
       verifyNoMoreInteractions(repository);
     },
   );

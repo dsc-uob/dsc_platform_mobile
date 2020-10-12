@@ -1,21 +1,23 @@
 import 'dart:convert';
-import 'package:meta/meta.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../bases/entities.dart';
-import '../bases/manager.dart';
-import '../bases/models.dart';
-import '../bases/serializer.dart';
 import '../constant.dart' as constant;
+import '../contrib/manager.dart';
+import '../db/entities.dart';
+import '../db/models.dart';
+import '../db/serializer.dart';
 import '../errors/exceptions.dart';
 
 class CacheManager extends Manager {
   final SharedPreferences _prefe;
   final FlutterSecureStorage _storage;
 
-  CacheManager(this._prefe, this._storage);
+  CacheManager(this._prefe, this._storage) {
+    prepared = true;
+  }
 
   Future<bool> cahce(String key, Serializer serializer) async {
     if (key == null) throw NoKeyToCacheException();
@@ -63,7 +65,7 @@ class CacheManager extends Manager {
     if (key == null) throw NoKeyToCacheException();
 
     final stringData = await _storage.read(key: key);
-    return jsonDecode(stringData);
+    return stringData;
   }
 
   Future<User> get currentUser async {
