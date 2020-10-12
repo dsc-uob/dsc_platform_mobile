@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-import '../../../core/bases/entities.dart';
+import '../../../core/db/entities.dart';
 import '../../../core/errors/failure.dart';
 import 'forms.dart';
 

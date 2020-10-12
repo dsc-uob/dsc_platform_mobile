@@ -1,4 +1,4 @@
-import 'package:dsc_platform/core/bases/serializer.dart';
+import 'package:dsc_platform/core/db/serializer.dart';
 import 'package:dsc_platform/core/utils/cache_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,7 +72,7 @@ void main() {
           .thenAnswer((_) async => Future.value(matcherData.object));
 
       /// Load from secure cache.
-      final actualData = await _storage.read(key: DATA_KEY);
+      final actualData = await manager.loadSecureCache(DATA_KEY);
 
       /// Check if equals.
       expect(actualData, matcherData.object);

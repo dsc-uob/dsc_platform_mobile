@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:dsc_platform/core/bases/entities.dart';
+import 'package:dsc_platform/core/db/entities.dart';
 import 'package:dsc_platform/features/user/domain/repositories.dart';
 import 'package:dsc_platform/features/user/domain/usecases.dart';
 import 'package:flutter_test/flutter_test.dart';
