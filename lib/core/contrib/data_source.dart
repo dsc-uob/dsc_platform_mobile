@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 
-import '../errors/exceptions.dart';
 import '../utils/authentication_manager.dart';
 import '../utils/cache_manager.dart';
 
@@ -53,13 +52,12 @@ abstract class RemoteDataSource extends DataSource {
   Future<void> setup() async {
     await authManager.setup();
 
-    if (!authManager.isAuthenticated) throw NoUserLoginException();
-
-    http.options = BaseOptions(
-      headers: {
-        'Authorization': authManager.token,
-      },
-    );
+    if (authManager.isAuthenticated)
+      http.options = BaseOptions(
+        headers: {
+          'Authorization': 'Token ${authManager.token}',
+        },
+      );
 
     prepared = true;
   }

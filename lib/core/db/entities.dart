@@ -38,6 +38,8 @@ class User extends Equatable {
         assert(isStaff != null),
         assert(isSuperUser != null);
 
+  String get fullName => firstName + ' ' + (lastName ?? '');
+
   @override
   List<Object> get props => [
         id,

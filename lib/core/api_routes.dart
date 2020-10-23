@@ -1,14 +1,14 @@
 import 'constant.dart';
 
-const api_url = server_ip + ':$server_port' + '/api';
+const api_url = 'http://' + server_ip + ':$server_port' + '/api';
 
 /// User Feature
 const user_api_url = api_url + '/user';
 
-const login_url = user_api_url + '/login';
-const create_url = user_api_url + '/create';
+const login_url = user_api_url + '/login/';
+const create_url = user_api_url + '/create/';
 
-const me_url = user_api_url + '/me';
+const me_url = user_api_url + '/me/';
 const member_url = user_api_url + '/member';
 
 String getMember(int id) => member_url + '/$id';

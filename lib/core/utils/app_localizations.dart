@@ -56,5 +56,5 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool shouldReload(LocalizationsDelegate<AppLocalizations> old) => false;
+  bool shouldReload(LocalizationsDelegate<AppLocalizations> old) => true;
 }

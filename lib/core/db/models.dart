@@ -23,10 +23,15 @@ class UserModel extends User implements Serializer {
           username: username,
           email: email,
           firstName: firstName,
+          lastName: lastName,
           isActive: isActive,
           isStaff: isStaff,
           isSuperUser: isSuperUser,
           token: token,
+          lastLogin: lastLogin,
+          bio: bio,
+          gender: gender,
+          stage: stage,
         );
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
@@ -96,7 +101,7 @@ class UserModel extends User implements Serializer {
         "is_superuser": isSuperUser,
         "gender": gender,
         "stage": stage,
-        "last_login": lastName,
+        "last_login": lastLogin.toString(),
         "bio": bio,
       };
 
