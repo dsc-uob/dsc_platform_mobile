@@ -24,13 +24,34 @@ class UserRepositoryImpl extends UserRepository {
         assert(remoteDS != null);
 
   @override
+  Future<void> setup() async {
+    if (!prepared) {
+      await localDS.setup();
+      await remoteDS.setup();
+      await networkInfo.setup();
+      prepared = true;
+    }
+  }
+
+  @override
+  Future<void> dispose() async {
+    await localDS.dispose();
+    await remoteDS.dispose();
+    await networkInfo.dispose();
+  }
+
+  @override
   Future<Either<Failure, User>> currentUser() async {
     if (await networkInfo.isConnected) {
       try {
         final user = await remoteDS.me();
         localDS.storeUser(user);
         return Right(user);
+      } on NoUserLoginException {
+        return Left(NoUserLoginFailure('No user found!'));
       } on UnknownException {
+        return Left(UnknownFailure('Unknown failure.'));
+      } catch (_) {
         return Left(UnknownFailure('Unknown failure.'));
       }
     } else {
@@ -62,7 +83,7 @@ class UserRepositoryImpl extends UserRepository {
   Future<Either<Failure, User>> login(LoginForm form) async {
     try {
       final user = await remoteDS.login(LoginSerializer(form));
-      localDS.storeUser(user);
+      localDS.storeUser(user).then((value) => print('User session saved!'));
       return Right(user);
     } catch (_) {
       return Left(UnknownFailure('Unknown failure.'));
@@ -96,6 +117,18 @@ class UserRepositoryImpl extends UserRepository {
       return Right(user);
     } catch (_) {
       return Left(UnknownFailure('Error with update.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, User>> isAuthenticated() async {
+    try {
+      final user = await localDS.getCurrentUser();
+      return Right(user);
+    } on NoUserLoginException {
+      return Left(NoUserLoginFailure('No user found!'));
+    } catch (_) {
+      return Left(UnknownFailure('$_'));
     }
   }
 }

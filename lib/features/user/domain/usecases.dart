@@ -54,6 +54,16 @@ class CurrentUser extends UseCase<User, NoParams> {
       repository.currentUser();
 }
 
+class AuthenticatedUser extends UseCase<User, NoParams> {
+  final UserRepository repository;
+
+  AuthenticatedUser(this.repository);
+
+  @override
+  Future<Either<Failure, User>> call([NoParams params]) =>
+      repository.isAuthenticated();
+}
+
 class GetUser extends UseCase<User, int> {
   final UserRepository repository;
 

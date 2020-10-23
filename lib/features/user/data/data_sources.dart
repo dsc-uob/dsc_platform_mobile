@@ -66,6 +66,7 @@ class RemoteUserDataSourceImpl extends RemoteUserDataSource {
       );
 
     authManager.update(res.data['token']);
+    await setup();
     return UserModel.fromJson(res.data);
   }
 
@@ -87,15 +88,24 @@ class RemoteUserDataSourceImpl extends RemoteUserDataSource {
 
   @override
   Future<UserModel> me() async {
-    final res = await http.get(api.me_url);
+    try {
+      final res = await http.get(api.me_url);
 
-    if (res.statusCode != 200)
-      throw UnknownException(
-        code: res.statusCode,
-        details: jsonEncode(res.data),
-      );
-
-    return UserModel.fromJson(res.data);
+      if (res.statusCode != 200)
+        throw UnknownException(
+          code: res.statusCode,
+          details: jsonEncode(res.data),
+        );
+      return UserModel.fromJson(res.data);
+    } catch (_) {
+      if (_.response.statusCode == 401)
+        throw NoUserLoginException();
+      else
+        throw UnknownException(
+          code: _.response.statusCode,
+          details: jsonEncode(_.response.data),
+        );
+    }
   }
 
   @override
