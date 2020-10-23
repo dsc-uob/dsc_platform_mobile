@@ -1,28 +1,19 @@
 part of 'settings_bloc.dart';
 
-abstract class SettingsState extends Equatable {
-  const SettingsState();
-
-  @override
-  List<Object> get props => [];
-}
-
-class SettingsInitial extends SettingsState {}
-
-class SettingsFetched extends SettingsState {
+class SettingsState extends Equatable {
   final Settings settings;
 
-  const SettingsFetched(this.settings);
+  const SettingsState(this.settings);
+
+  factory SettingsState.defaultSettings() {
+    return SettingsState(
+      Settings(
+        langCode: 'ar',
+        fontFamily: 'Almarai',
+      ),
+    );
+  }
 
   @override
   List<Object> get props => [settings];
-}
-
-class SettingsFailed extends SettingsState {
-  final Failure failure;
-
-  const SettingsFailed(this.failure);
-
-  @override
-  List<Object> get props => [failure];
 }

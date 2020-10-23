@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
-import '../../../../core/errors/failure.dart';
 import '../../domain/entities.dart';
 import '../../domain/usecases.dart';
 
@@ -20,7 +19,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     @required this.saveSettings,
   })  : assert(getSettings != null),
         assert(saveSettings != null),
-        super(SettingsInitial());
+        super(SettingsState.defaultSettings());
 
   @override
   Stream<SettingsState> mapEventToState(
@@ -31,32 +30,32 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (event is FetchSettings) {
       final result = await getSettings();
       yield result.fold(
-        (l) => SettingsFailed(l),
-        (r) => SettingsFetched(r),
+        (l) => SettingsState.defaultSettings(),
+        (r) => SettingsState(r),
       );
     }
 
-    if (event is ChangeLanguage && currentState is SettingsFetched) {
+    if (event is ChangeLanguage) {
       final settings = Settings(
         langCode: event.langCode,
         fontFamily: currentState.settings.fontFamily,
       );
       final result = await saveSettings(settings);
       yield result.fold(
-        (l) => SettingsFailed(l),
-        (r) => SettingsFetched(settings),
+        (l) => SettingsState.defaultSettings(),
+        (r) => SettingsState(settings),
       );
     }
 
-    if (event is ChangeFont && currentState is SettingsFetched) {
+    if (event is ChangeFont) {
       final settings = Settings(
         langCode: currentState.settings.langCode,
         fontFamily: event.fontFamily,
       );
       final result = await saveSettings(settings);
       yield result.fold(
-        (l) => SettingsFailed(l),
-        (r) => SettingsFetched(settings),
+        (l) => SettingsState.defaultSettings(),
+        (r) => SettingsState(settings),
       );
     }
   }
