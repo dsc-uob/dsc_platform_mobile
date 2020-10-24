@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+import '../utils/tools.dart';
+
 class User extends Equatable {
   final int id;
   final String username;
@@ -39,6 +41,8 @@ class User extends Equatable {
         assert(isSuperUser != null);
 
   String get fullName => firstName + ' ' + (lastName ?? '');
+  String get stringGender => getGender(gender);
+  String get stringStage => getStage(stage);
 
   @override
   List<Object> get props => [
