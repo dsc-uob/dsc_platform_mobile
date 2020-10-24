@@ -19,7 +19,7 @@ const post_sys_api_url = api_url + '/post_sys';
 const posts_url = post_sys_api_url + '/posts/';
 const comments_url = post_sys_api_url + '/comments/';
 
-String thisPost(int postId) => comments_url + '$postId';
-
+String commentsUrl(int postId) => comments_url + '?post=$postId';
+String thisPost(int postId) => posts_url + '$postId';
 String thisComment(int commentId, int postId) =>
     comments_url + '$commentId/?post=$postId';

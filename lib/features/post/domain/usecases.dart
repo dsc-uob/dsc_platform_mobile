@@ -68,14 +68,17 @@ class UpdateComment extends UseCase<Comment, UpdateCommentForm> {
 
   @override
   Future<Either<Failure, Comment>> call(params) =>
-      repository.update(params.id, params);
+      repository.update(params.id, params.postId, params);
 }
 
-class DeleteComment extends UseCase<void, int> {
+class DeleteComment extends UseCase<void, Map<String, int>> {
   final CommentRepository repository;
 
   DeleteComment(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(params) => repository.delete(params);
+  Future<Either<Failure, void>> call(params) => repository.delete(
+        params['id'],
+        params['postId'],
+      );
 }

@@ -15,8 +15,9 @@ abstract class PostRepository extends Repository {
 
 abstract class CommentRepository extends Repository {
   Future<Either<Failure, List<Comment>>> get(int postId);
-  Future<Either<Failure, List<Comment>>> getThis(int id);
+  Future<Either<Failure, List<Comment>>> getThis(int id, int postId);
   Future<Either<Failure, Comment>> add(CreateCommentForm form);
-  Future<Either<Failure, Comment>> update(int id, UpdateCommentForm form);
-  Future<Either<Failure, void>> delete(int id);
+  Future<Either<Failure, Comment>> update(
+      int id, int postId, UpdateCommentForm form);
+  Future<Either<Failure, void>> delete(int id, int postId);
 }

@@ -27,6 +27,7 @@ class CreateCommentSerializer extends Serializer<CreateCommentForm> {
 
   @override
   Map<String, dynamic> generateMap() => {
+        'post': object.postId,
         'body': object.body,
       };
 }
