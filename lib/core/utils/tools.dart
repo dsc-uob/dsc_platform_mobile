@@ -64,10 +64,8 @@ String getGender(int gender) {
   switch (gender) {
     case 0:
       return Strings.male;
-      break;
     case 1:
       return Strings.female;
-      break;
     default:
       return Strings.undefined;
   }
@@ -77,22 +75,16 @@ String getStage(int gender) {
   switch (gender) {
     case 1:
       return Strings.first;
-      break;
     case 2:
       return Strings.second;
-      break;
     case 3:
       return Strings.third;
-      break;
     case 4:
       return Strings.forth;
-      break;
     case 5:
       return Strings.fifth;
-      break;
     case 6:
       return Strings.sixth;
-      break;
     default:
       return Strings.undefined;
   }
