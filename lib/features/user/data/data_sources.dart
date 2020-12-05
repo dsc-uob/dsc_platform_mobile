@@ -126,7 +126,7 @@ class RemoteUserDataSourceImpl extends RemoteUserDataSource {
 
   @override
   Future<UserModel> getUser(int id) async {
-    final res = await http.get(api.getMember(id));
+    final res = await http.get(api.member_url + '/$id');
 
     if (res.statusCode != 200)
       throw UnknownException(

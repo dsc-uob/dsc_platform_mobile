@@ -6,13 +6,23 @@ import 'entities.dart';
 import 'forms.dart';
 import 'repositories.dart';
 
-class GetPosts extends UseCase<List<Post>, NoParams> {
+class GetPosts extends UseCase<List<Post>, LimitOffsetPagination> {
   final PostRepository repository;
 
   GetPosts(this.repository);
 
   @override
-  Future<Either<Failure, List<Post>>> call(params) => repository.get();
+  Future<Either<Failure, List<Post>>> call(params) => repository.get(params);
+}
+
+class GetUserPosts extends UseCase<List<Post>, UserPostsParams> {
+  final PostRepository repository;
+
+  GetUserPosts(this.repository);
+
+  @override
+  Future<Either<Failure, List<Post>>> call(UserPostsParams params) =>
+      repository.getUserPost(params);
 }
 
 class CreatePost extends UseCase<Post, CreatePostForm> {
@@ -30,8 +40,7 @@ class UpdatePost extends UseCase<Post, UpdatePostForm> {
   UpdatePost(this.repository);
 
   @override
-  Future<Either<Failure, Post>> call(params) =>
-      repository.update(params.id, params);
+  Future<Either<Failure, Post>> call(params) => repository.update(params);
 }
 
 class DeletePost extends UseCase<void, int> {
@@ -43,7 +52,7 @@ class DeletePost extends UseCase<void, int> {
   Future<Either<Failure, void>> call(params) => repository.delete(params);
 }
 
-class GetComments extends UseCase<List<Comment>, int> {
+class GetComments extends UseCase<List<Comment>, CommentsFetchParams> {
   final CommentRepository repository;
 
   GetComments(this.repository);

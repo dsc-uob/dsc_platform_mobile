@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import '../../../core/db/serializer.dart';
 import '../domain/entities.dart';
 
-class SettingsModel extends Settings implements Serializer {
+class SettingsModel extends Settings implements MapSerializer {
   const SettingsModel({
     @required String langCode,
     @required String fontFamily,

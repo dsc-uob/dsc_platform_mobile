@@ -19,6 +19,9 @@ class AuthenticationBloc
     this.logoutUser,
   ) : super(AuthenticationInitial());
 
+  User _user;
+  User get user => _user;
+
   @override
   Stream<AuthenticationState> mapEventToState(
     AuthenticationEvent event,
@@ -27,11 +30,15 @@ class AuthenticationBloc
       final result = await authenticatedUser();
       yield result.fold(
         (l) => UnauthenticatedUser(),
-        (r) => AuthenticateUser(r),
+        (r) {
+          _user = r;
+          return AuthenticateUser(r);
+        },
       );
     }
 
     if (event is NowLogin) {
+      _user = event.user;
       yield AuthenticateUser(event.user);
     }
 

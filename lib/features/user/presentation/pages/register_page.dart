@@ -53,6 +53,18 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    name.dispose();
+    email.dispose();
+    username.dispose();
+    password.dispose();
+    passwordConfirm.dispose();
+
+    nameNode.dispose();
+    emailNode.dispose();
+    usernameNode.dispose();
+    passwordNode.dispose();
+    passwordConfirmNode.dispose();
+
     registerBloc.close();
     super.dispose();
   }

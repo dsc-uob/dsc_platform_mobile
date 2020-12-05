@@ -1,7 +1,7 @@
 import '../../../core/db/serializer.dart';
 import '../domain/forms.dart';
 
-class CreatePostSerializer extends Serializer<CreatePostForm> {
+class CreatePostSerializer extends MapSerializer<CreatePostForm> {
   const CreatePostSerializer(CreatePostForm object) : super(object);
 
   @override
@@ -11,7 +11,7 @@ class CreatePostSerializer extends Serializer<CreatePostForm> {
       };
 }
 
-class UpdatePostSerializer extends Serializer<UpdatePostForm> {
+class UpdatePostSerializer extends MapSerializer<UpdatePostForm> {
   const UpdatePostSerializer(UpdatePostForm object) : super(object);
 
   @override
@@ -22,7 +22,7 @@ class UpdatePostSerializer extends Serializer<UpdatePostForm> {
       };
 }
 
-class CreateCommentSerializer extends Serializer<CreateCommentForm> {
+class CreateCommentSerializer extends MapSerializer<CreateCommentForm> {
   const CreateCommentSerializer(CreateCommentForm object) : super(object);
 
   @override
@@ -32,7 +32,7 @@ class CreateCommentSerializer extends Serializer<CreateCommentForm> {
       };
 }
 
-class UpdateCommentSerializer extends Serializer<UpdateCommentForm> {
+class UpdateCommentSerializer extends MapSerializer<UpdateCommentForm> {
   const UpdateCommentSerializer(UpdateCommentForm object) : super(object);
 
   @override

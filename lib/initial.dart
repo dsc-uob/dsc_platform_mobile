@@ -1,5 +1,6 @@
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:dio/dio.dart';
+import 'package:dsc_platform/features/post/presentation/blocs/comment/comment_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/utils/authentication_manager.dart';
 import 'core/utils/cache_manager.dart';
 import 'core/utils/network_info.dart';
+import 'features/post/data/data_sources.dart';
+import 'features/post/data/repositories_impl.dart';
+import 'features/post/domain/usecases.dart';
+import 'features/post/presentation/blocs/post/post_bloc.dart';
 import 'features/settings/data/datasources.dart';
 import 'features/settings/data/repositories_impl.dart';
 import 'features/settings/domain/usecases.dart';
@@ -56,6 +61,18 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => LocalSettingsDataSourceImpl(sl()),
   );
+  sl.registerLazySingleton(
+    () => PostLocalDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton(
+    () => PostRemoteDataSourceImpl(sl(), sl()),
+  );
+  sl.registerLazySingleton(
+    () => CommentRemoteDataSourceImpl(sl(), sl()),
+  );
+  sl.registerLazySingleton(
+    () => CommentLocalDataSourceImpl(sl()),
+  );
 
   //! Repositories
   sl.registerLazySingleton(
@@ -67,6 +84,21 @@ Future<void> init() async {
   );
   sl.registerLazySingleton(
     () => SettingsRepositoryImpl(sl<LocalSettingsDataSourceImpl>())..setup(),
+  );
+  sl.registerLazySingleton(
+    () => PostRepositoryImpl(
+      networkInfo: sl<NetworkInfoImpl>(),
+      localDataSource: sl<PostLocalDataSourceImpl>(),
+      remoteDataSource: sl<PostRemoteDataSourceImpl>(),
+    ),
+  );
+
+  sl.registerLazySingleton(
+    () => CommentRepositoryImpl(
+      networkInfo: sl<NetworkInfoImpl>(),
+      localDataSource: sl<CommentLocalDataSourceImpl>(),
+      remoteDataSource: sl<CommentRemoteDataSourceImpl>(),
+    ),
   );
 
   //! UseCases
@@ -97,6 +129,33 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => SaveSettings(sl<SettingsRepositoryImpl>()),
   );
+  sl.registerLazySingleton(
+    () => CreatePost(sl<PostRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetPosts(sl<PostRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetUserPosts(sl<PostRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdatePost(sl<PostRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeletePost(sl<PostRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => GetComments(sl<CommentRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => CreateComment(sl<CommentRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateComment(sl<CommentRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteComment(sl<CommentRepositoryImpl>()),
+  );
 
   //! Blocs
   sl.registerFactory(
@@ -116,6 +175,24 @@ Future<void> init() async {
     () => SettingsBloc(
       getSettings: sl(),
       saveSettings: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => PostBloc(
+      getPosts: sl(),
+      getUserPosts: sl(),
+      createPost: sl(),
+      updatePost: sl(),
+      deletePost: sl(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => CommentBloc(
+      getComments: sl(),
+      createComment: sl(),
+      updateComment: sl(),
+      deleteComment: sl(),
     ),
   );
 }

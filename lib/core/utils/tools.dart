@@ -36,8 +36,7 @@ PasswordValidation validatePassword(String value) {
   if (value.isEmpty) return PasswordValidation.Invalid;
   if (value.length < 6) return PasswordValidation.Must_Longer_Than_5;
 
-  String pattern =
-      r'^(?=.*?[A-Za-z-!@#\$&*~])(?=.*?[0-9]).{6,}$';
+  String pattern = r'^(?=.*?[A-Za-z-!@#\$&*~])(?=.*?[0-9]).{6,}$';
 
   final _passwordRegExp = RegExp(pattern);
 

@@ -10,7 +10,9 @@ const SETTINGS_KEY = 'SETTINGS';
 
 /// Const Server Data
 const server_ip = '172.105.245.119';
-const server_port = 82;
+const server_port = 443;
+const domain = 'dsc-iq.cf';
+const web_url = 'https://$domain/';
 
 /// Const colors
 const Color primaryColor = const Color(0xff3F3D56);

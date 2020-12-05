@@ -42,6 +42,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    emailNode.dispose();
+    passwordNode.dispose();
+    loginBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Strings.context = context;
     setStatusBarColor(StatusBarState.Opacity);

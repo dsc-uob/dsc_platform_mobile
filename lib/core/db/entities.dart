@@ -17,6 +17,10 @@ class User extends Equatable {
   final bool isSuperUser;
   final DateTime lastLogin;
   final String token;
+  final String photo;
+  final String github;
+  final String twitter;
+  final String numberPhone;
 
   const User({
     @required this.id,
@@ -32,6 +36,10 @@ class User extends Equatable {
     this.bio,
     this.lastLogin,
     this.token,
+    this.photo,
+    this.github,
+    this.twitter,
+    this.numberPhone,
   })  : assert(id != null),
         assert(username != null),
         assert(email != null),
@@ -59,5 +67,9 @@ class User extends Equatable {
         isSuperUser,
         lastLogin,
         token,
+        photo,
+        github,
+        twitter,
+        numberPhone,
       ];
 }

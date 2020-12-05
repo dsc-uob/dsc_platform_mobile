@@ -61,6 +61,9 @@ class UpdateForm extends Equatable {
   final int gender;
   final int stage;
   final String bio;
+  final String github;
+  final String twitter;
+  final String numberPhone;
 
   const UpdateForm({
     this.email,
@@ -71,6 +74,9 @@ class UpdateForm extends Equatable {
     this.gender,
     this.stage,
     this.bio,
+    this.github,
+    this.twitter,
+    this.numberPhone,
   });
 
   @override
@@ -83,5 +89,8 @@ class UpdateForm extends Equatable {
         gender,
         stage,
         bio,
+        github,
+        twitter,
+        numberPhone,
       ];
 }

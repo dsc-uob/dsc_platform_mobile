@@ -77,7 +77,43 @@ class Strings {
   static final bio = AppLocalizations.of(context).translate('bio');
   static final lastLogin = AppLocalizations.of(context).translate('lastLogin');
 
-  static final dataFailedUpdated = AppLocalizations.of(context).translate('dataFailedUpdated');
-  static final dataSuccessfulUpdate = AppLocalizations.of(context).translate('dataSuccessfulUpdate');
+  static final dataFailedUpdated =
+      AppLocalizations.of(context).translate('dataFailedUpdated');
+  static final dataSuccessfulUpdate =
+      AppLocalizations.of(context).translate('dataSuccessfulUpdate');
 
+  static final post = AppLocalizations.of(context).translate('post');
+  static final posts = AppLocalizations.of(context).translate('posts');
+  static final delete = AppLocalizations.of(context).translate('delete');
+  static final done = AppLocalizations.of(context).translate('done');
+  static final create = AppLocalizations.of(context).translate('create');
+  static final account = AppLocalizations.of(context).translate('account');
+  static final myAccount = AppLocalizations.of(context).translate('myAccount');
+  static final save = AppLocalizations.of(context).translate('save');
+  static final changeTextDirection =
+      AppLocalizations.of(context).translate('changeTextDirection');
+
+  static final bold = AppLocalizations.of(context).translate('bold');
+  static final italic = AppLocalizations.of(context).translate('italic');
+  static final crossOut = AppLocalizations.of(context).translate('crossOut');
+  static final inlineCode =
+      AppLocalizations.of(context).translate('inlineCode');
+  static final writePostHere =
+      AppLocalizations.of(context).translate('writePostHere');
+  static final heads = AppLocalizations.of(context).translate('heads');
+  static final head = AppLocalizations.of(context).translate('head');
+  static final code = AppLocalizations.of(context).translate('code');
+  static final quote = AppLocalizations.of(context).translate('quote');
+  static final listNumbered =
+      AppLocalizations.of(context).translate('listNumbered');
+  static final listBulleted =
+      AppLocalizations.of(context).translate('listBulleted');
+  static final checkBox = AppLocalizations.of(context).translate('checkBox');
+  static final table = AppLocalizations.of(context).translate('table');
+  static final image = AppLocalizations.of(context).translate('image');
+  static final url = AppLocalizations.of(context).translate('url');
+  static final video = AppLocalizations.of(context).translate('video');
+  static final emoji = AppLocalizations.of(context).translate('emoji');
+  static final gif = AppLocalizations.of(context).translate('gif'); 
+  static final cancel = AppLocalizations.of(context).translate('cancel');
 }

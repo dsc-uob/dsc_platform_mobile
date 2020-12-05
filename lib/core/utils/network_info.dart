@@ -1,8 +1,6 @@
-import 'dart:io';
 
 import 'package:data_connection_checker/data_connection_checker.dart';
 
-import '../constant.dart';
 import '../contrib/manager.dart';
 
 abstract class NetworkInfo extends Manager {
@@ -16,12 +14,12 @@ class NetworkInfoImpl extends NetworkInfo {
 
   @override
   Future<void> setup() {
-    connectionChecker.addresses = [
-      AddressCheckOptions(
-        InternetAddress(server_ip),
-        port: server_port,
-      ),
-    ];
+    // connectionChecker.addresses = [
+    //   AddressCheckOptions(
+    //     InternetAddress(server_ip),
+    //      port: server_port,
+    //   ),
+    // ];
     return super.setup();
   }
 

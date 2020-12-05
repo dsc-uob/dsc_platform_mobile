@@ -71,6 +71,25 @@ class _UserFormPageState extends State<UserFormPage> {
   }
 
   @override
+  void dispose() {
+    firstName.dispose();
+    lastName.dispose();
+    email.dispose();
+    username.dispose();
+    password.dispose();
+    bio.dispose();
+
+    firstNameNode.dispose();
+    lastNameNode.dispose();
+    emailNode.dispose();
+    usernameNode.dispose();
+    passwordNode.dispose();
+    bioNode.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -122,8 +141,8 @@ class _UserFormPageState extends State<UserFormPage> {
                         margin: const EdgeInsets.all(16),
                         child: CircleAvatar(
                           backgroundColor: secondColor,
-                          child: SvgPicture.asset(
-                              'assets/images/profile_pic.svg'),
+                          child:
+                              SvgPicture.asset('assets/images/profile_pic.svg'),
                         ),
                       ),
                       UserTextField(
@@ -220,8 +239,7 @@ class _UserFormPageState extends State<UserFormPage> {
                         margin: const EdgeInsets.all(5),
                         child: DropdownButton<int>(
                           isExpanded: true,
-                          hint:
-                              Text("${Strings.gender}: ${getGender(gender)}"),
+                          hint: Text("${Strings.gender}: ${getGender(gender)}"),
                           items: List<DropdownMenuItem<int>>.generate(
                             2,
                             (index) => DropdownMenuItem<int>(
@@ -229,8 +247,7 @@ class _UserFormPageState extends State<UserFormPage> {
                               value: index,
                             ),
                           ),
-                          onChanged: (value) =>
-                              setState(() => gender = value),
+                          onChanged: (value) => setState(() => gender = value),
                         ),
                       ),
                       UserTextField(

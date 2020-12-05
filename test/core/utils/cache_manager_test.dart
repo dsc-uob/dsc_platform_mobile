@@ -9,7 +9,7 @@ const DATA_KEY = 'DATA_KEY';
 
 class MockSecureStorage extends Mock implements FlutterSecureStorage {}
 
-class SimpleSerializer extends Serializer<String> {
+class SimpleSerializer extends MapSerializer<String> {
   SimpleSerializer(object) : super(object);
 
   @override

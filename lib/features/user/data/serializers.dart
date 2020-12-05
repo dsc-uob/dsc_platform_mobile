@@ -1,7 +1,7 @@
 import '../../../core/db/serializer.dart';
 import '../domain/forms.dart';
 
-class LoginSerializer extends Serializer<LoginForm> {
+class LoginSerializer extends MapSerializer<LoginForm> {
   LoginSerializer(LoginForm object) : super(object);
 
   @override
@@ -11,7 +11,7 @@ class LoginSerializer extends Serializer<LoginForm> {
       };
 }
 
-class RegisterSerializer extends Serializer<RegisterForm> {
+class RegisterSerializer extends MapSerializer<RegisterForm> {
   RegisterSerializer(RegisterForm object) : super(object);
 
   @override
@@ -27,7 +27,7 @@ class RegisterSerializer extends Serializer<RegisterForm> {
       };
 }
 
-class UpdateSerializer extends Serializer<UpdateForm> {
+class UpdateSerializer extends MapSerializer<UpdateForm> {
   UpdateSerializer(UpdateForm object) : super(object);
 
   @override
@@ -40,5 +40,8 @@ class UpdateSerializer extends Serializer<UpdateForm> {
         if (object.gender != null) 'gender': object.gender,
         if (object.stage != null) 'stage': object.stage,
         if (object.bio != null) 'bio': object.bio,
+        if(object.github != null) 'github': object.github,
+        if(object.twitter != null) 'twitter': object.twitter,
+        if(object.github != null) 'number_phone': object.numberPhone,
       };
 }

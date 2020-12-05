@@ -4,7 +4,7 @@ import '../../../core/db/models.dart';
 import '../../../core/db/serializer.dart';
 import '../domain/entities.dart';
 
-class PostModel extends Post implements Serializer {
+class PostModel extends Post implements MapSerializer {
   @override
   final UserModel user;
 
@@ -27,7 +27,7 @@ class PostModel extends Post implements Serializer {
         user: UserModel.fromJson(data['user']),
         title: data['title'],
         body: data['body'],
-        createdOn: DateTime.parse(data['created_on']),
+        createdOn: DateTime.parse(data['created_on']).toLocal(),
       );
 
   PostModel copyWith({
@@ -51,14 +51,14 @@ class PostModel extends Post implements Serializer {
         'user': user.generateMap(),
         'title': title,
         'body': body,
-        'created_on': createdOn,
+        'created_on': createdOn.toString(),
       };
 
   @override
   get object => this;
 }
 
-class CommentModel extends Comment implements Serializer {
+class CommentModel extends Comment implements MapSerializer {
   @override
   final UserModel user;
 
@@ -81,7 +81,7 @@ class CommentModel extends Comment implements Serializer {
         postId: data['post'],
         body: data['body'],
         user: UserModel.fromJson(data['user']),
-        createdOn: DateTime.parse(data['created_on']),
+        createdOn: DateTime.parse(data['created_on']).toLocal(),
       );
 
   CommentModel copyWith({

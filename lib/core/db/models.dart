@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import 'entities.dart';
 import 'serializer.dart';
 
-class UserModel extends User implements Serializer {
+class UserModel extends User implements MapSerializer {
   const UserModel({
     @required int id,
     @required String username,
@@ -18,6 +18,10 @@ class UserModel extends User implements Serializer {
     String bio,
     DateTime lastLogin,
     String token,
+    String photo,
+    String github,
+    String twitter,
+    String numberPhone,
   }) : super(
           id: id,
           username: username,
@@ -32,12 +36,16 @@ class UserModel extends User implements Serializer {
           bio: bio,
           gender: gender,
           stage: stage,
+          photo: photo,
+          github: github,
+          twitter: twitter,
+          numberPhone: numberPhone,
         );
 
   factory UserModel.fromJson(Map<String, dynamic> data) {
     DateTime lastLogin;
     if (data['last_login'] != null)
-      lastLogin = DateTime.parse(data['last_login']);
+      lastLogin = DateTime.parse(data['last_login']).toLocal();
 
     return UserModel(
       id: data['id'],
@@ -53,6 +61,10 @@ class UserModel extends User implements Serializer {
       isSuperUser: data['is_superuser'],
       lastLogin: lastLogin,
       token: data['token'],
+      photo: data['photo'],
+      github: data['github'],
+      twitter: data['twitter'],
+      numberPhone: data['number_phone'],
     );
   }
 
@@ -72,6 +84,10 @@ class UserModel extends User implements Serializer {
     String bio,
     DateTime lastLogin,
     String token,
+    String photo,
+    String github,
+    String twitter,
+    String numberPhone,
   }) =>
       UserModel(
         id: id ?? this.id,
@@ -87,6 +103,10 @@ class UserModel extends User implements Serializer {
         stage: stage ?? this.stage,
         lastLogin: lastLogin ?? this.lastLogin,
         token: token ?? this.token,
+        photo: photo ?? this.photo,
+        github: github ?? this.github,
+        numberPhone: numberPhone ?? this.numberPhone,
+        twitter: twitter ?? this.twitter,
       );
 
   @override
@@ -103,6 +123,10 @@ class UserModel extends User implements Serializer {
         "stage": stage,
         "last_login": lastLogin.toString(),
         "bio": bio,
+        "photo": photo,
+        "github": github,
+        "twitter": twitter,
+        "number_phone": numberPhone,
       };
 
   @override

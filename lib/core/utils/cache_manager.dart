@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../constant.dart' as constant;
 import '../contrib/manager.dart';
@@ -19,7 +19,7 @@ class CacheManager extends Manager {
     prepared = true;
   }
 
-  Future<bool> cahce(String key, Serializer serializer) async {
+  Future<bool> cahce(String key, BaseSerializer serializer) async {
     if (key == null) throw NoKeyToCacheException();
     if (serializer == null) throw NoValueToCacheException();
 
@@ -47,7 +47,7 @@ class CacheManager extends Manager {
     return await _storage.write(key: constant.TOKEN_KEY, value: token);
   }
 
-  Future<void> secureCache(String key, Serializer serializer) async {
+  Future<void> secureCache(String key, BaseSerializer serializer) async {
     if (key == null) throw NoKeyToCacheException();
     if (serializer == null) throw NoValueToCacheException();
     final strignData = jsonEncode(serializer.generateMap());
