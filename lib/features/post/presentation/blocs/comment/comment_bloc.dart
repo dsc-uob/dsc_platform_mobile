@@ -53,10 +53,10 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
       }
 
       final res = await getComments(
-        CommentsFetchParams(
+        IdLimitOffsetParams(
           limit: 10,
           offset: offset,
-          post: event.post,
+          id: event.post,
         ),
       );
 

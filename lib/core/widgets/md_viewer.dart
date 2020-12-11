@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,6 +35,9 @@ class MDViewer extends StatelessWidget {
           markdownTheme: markdownTheme,
           pConfig: PConfig(
             onLinkTap: _launchUrl,
+          ),
+          imgBuilder: (url, attributes) => Image(
+            image: CachedNetworkImageProvider(url),
           ),
         ),
       ),

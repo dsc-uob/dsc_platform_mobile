@@ -59,6 +59,30 @@ class NoUserLoginException extends DSCPlatFormException {
         );
 }
 
+class ErrorWithUploadTask extends DSCPlatFormException {
+  ErrorWithUploadTask({int code, String details})
+      : super(
+          code: code ?? 800,
+          details: details ?? 'Error with upload file.',
+        );
+}
+
+class ErrorWithUploadImage extends ErrorWithUploadTask {
+  ErrorWithUploadImage()
+      : super(
+          code: 801,
+          details: 'Error with upload image.',
+        );
+}
+
+class NoPostOnEditModeException extends DSCPlatFormException {
+  NoPostOnEditModeException()
+      : super(
+          code: 810,
+          details: 'No post mode data on edit mode.',
+        );
+}
+
 class UnknownException extends DSCPlatFormException {
   UnknownException({
     @required int code,

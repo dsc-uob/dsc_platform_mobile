@@ -41,9 +41,10 @@ class PostRepositoryImpl extends PostRepository {
   }
 
   @override
-  Future<Either<Failure, List<Post>>> getUserPost(UserPostsParams page) async {
+  Future<Either<Failure, List<Post>>> getUserPost(
+      IdLimitOffsetParams page) async {
     try {
-      final key = 'USER_${page.user}_POST';
+      final key = 'USER_${page.id}_POST';
       if (await networkInfo.isConnected) {
         final res = await remoteDataSource.getUserPost(page);
         final ls = ListSerializer<PostModel>(res, key: key);
@@ -141,19 +142,19 @@ class CommentRepositoryImpl extends CommentRepository {
   }
 
   @override
-  Future<Either<Failure, List<Comment>>> get(CommentsFetchParams page) async {
+  Future<Either<Failure, List<Comment>>> get(IdLimitOffsetParams page) async {
     try {
       if (await networkInfo.isConnected) {
         final res = await remoteDataSource.get(page);
         localDataSource.cache(
           ListSerializer(
             res,
-            key: 'COMMENTS_${page.post}',
+            key: 'COMMENTS_${page.id}',
           ),
         );
         return Right(res);
       } else {
-        final res = await localDataSource.get(page.post);
+        final res = await localDataSource.get(page.id);
         return Right(res);
       }
     } catch (_) {
@@ -165,7 +166,8 @@ class CommentRepositoryImpl extends CommentRepository {
   Future<Either<Failure, List<Comment>>> getThis(
     int id,
     int postId,
-  ) async {}
+  ) async =>
+      null;
 
   @override
   Future<Either<Failure, Comment>> update(

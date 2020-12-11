@@ -28,11 +28,11 @@ class LimitOffsetPagination extends Pagination {
   List<Object> get props => [limit, offset];
 }
 
-class CommentsFetchParams extends LimitOffsetPagination {
-  final int post;
+class IdLimitOffsetParams extends LimitOffsetPagination {
+  final int id;
 
-  const CommentsFetchParams({
-    this.post,
+  const IdLimitOffsetParams({
+    this.id,
     int limit,
     int offset,
   }) : super(
@@ -41,21 +41,5 @@ class CommentsFetchParams extends LimitOffsetPagination {
         );
 
   @override
-  List<Object> get props => super.props..add(post);
-}
-
-class UserPostsParams extends LimitOffsetPagination {
-  final int user;
-
-  const UserPostsParams({
-    this.user,
-    int limit,
-    int offset,
-  }) : super(
-          limit: limit,
-          offset: offset,
-        );
-
-  @override
-  List<Object> get props => super.props..add(user);
+  List<Object> get props => super.props..add(id);
 }

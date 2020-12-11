@@ -47,7 +47,7 @@ abstract class PostRemoteDataSource extends RemoteDataSource {
       : super(http, authManager);
 
   Future<List<PostModel>> get(LimitOffsetPagination page);
-  Future<List<PostModel>> getUserPost(UserPostsParams page);
+  Future<List<PostModel>> getUserPost(IdLimitOffsetParams page);
   Future<PostModel> add(CreatePostSerializer serializer);
   Future<PostModel> update(UpdatePostSerializer serializer);
   Future<void> delete(int id);
@@ -105,7 +105,7 @@ class PostRemoteDataSourceImpl extends PostRemoteDataSource {
     if (!prepared) await setup();
     final id = serializer.object.id;
     final res = await http.patch(
-      api.posts_url + '/$id',
+      api.posts_url + '$id/',
       data: serializer.generateMap(),
     );
 
@@ -123,24 +123,25 @@ class PostRemoteDataSourceImpl extends PostRemoteDataSource {
     if (!prepared) await setup();
 
     final res = await http.delete(
-      api.posts_url + '/$id',
+      api.posts_url + '$id/',
     );
 
-    if (res.statusCode != 200)
+    if (res.statusCode != 204)
       throw UnknownException(
         code: res.statusCode,
         details: '${res.data}',
       );
+    return;
   }
 
   @override
-  Future<List<PostModel>> getUserPost(UserPostsParams page) async {
+  Future<List<PostModel>> getUserPost(IdLimitOffsetParams page) async {
     if (!prepared) await setup();
 
     final res = await http.get(
       api.posts_url,
       queryParameters: {
-        'user': page.user,
+        'user': page.id,
         if (page.limit != null && page.offset != null) 'limit': page.limit,
         if (page.limit != null && page.offset != null) 'offset': page.offset,
       },
@@ -197,7 +198,7 @@ abstract class CommentRemoteDataSource extends RemoteDataSource {
   CommentRemoteDataSource(Dio http, AuthenticationManager authManager)
       : super(http, authManager);
 
-  Future<List<CommentModel>> get(CommentsFetchParams page);
+  Future<List<CommentModel>> get(IdLimitOffsetParams page);
   Future<CommentModel> add(CreateCommentSerializer serializer);
   Future<CommentModel> update(
       int id, int postId, UpdateCommentSerializer serializer);
@@ -209,13 +210,13 @@ class CommentRemoteDataSourceImpl extends CommentRemoteDataSource {
       : super(http, authManager);
 
   @override
-  Future<List<CommentModel>> get(CommentsFetchParams params) async {
+  Future<List<CommentModel>> get(IdLimitOffsetParams params) async {
     if (!prepared) await setup();
 
     final res = await http.get(
       api.comments_url,
       queryParameters: {
-        'post': params.post,
+        'post': params.id,
         if (params.limit != null && params.offset != null)
           'limit': params.limit,
         if (params.limit != null && params.offset != null)

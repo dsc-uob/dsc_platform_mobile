@@ -39,12 +39,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
     }
     if (event is FetchMemberAccount) {
-      yield LoadFetchAccount();
-      final result = await getUser(event.id);
-      yield result.fold(
-        (l) => FieldFetchAccount(l),
-        (r) => SuccessFetchAccount(r),
-      );
+      // yield LoadFetchAccount();
+      // final result = await getUser(event.id);
+      // yield result.fold(
+      //   (l) => FieldFetchAccount(l),
+      //   (r) => SuccessFetchAccount(r),
+      // );
+      yield SuccessFetchAccount(event.user);
     }
     if (event is UpdateMyAccount) {
       yield LoadUpdateAccount();

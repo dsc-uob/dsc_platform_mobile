@@ -56,7 +56,7 @@ class PostBloc extends Bloc<PostsEvent, PostState> {
         (r) => UpdatePostSuccess(
           currentState.posts
             ..removeWhere((p) => p.id == r.id)
-            ..add(r),
+            ..insert(0, r),
         ),
       );
     }
@@ -104,19 +104,17 @@ class PostBloc extends Bloc<PostsEvent, PostState> {
   /// Fetch all user post.
   Stream<PostState> _fetchUserPostsToState(int user) async* {
     final currentState = state;
-    int offset;
+    int offset = 0;
     List<Post> posts = <Post>[];
 
     if (currentState is PostsSuccessfulLoaded) {
       offset = currentState.posts.length;
       posts = currentState.posts;
-    } else {
-      offset = 0;
     }
-    
+
     final res = await getUserPosts(
-      UserPostsParams(
-        user: user,
+      IdLimitOffsetParams(
+        id: user,
         limit: 10,
         offset: offset,
       ),

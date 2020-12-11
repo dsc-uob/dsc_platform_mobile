@@ -33,6 +33,9 @@ class _UserFormPageState extends State<UserFormPage> {
   TextEditingController email;
   TextEditingController password;
   TextEditingController bio;
+  TextEditingController github;
+  TextEditingController numberPhone;
+  TextEditingController twitter;
 
   FocusNode firstNameNode;
   FocusNode lastNameNode;
@@ -40,6 +43,9 @@ class _UserFormPageState extends State<UserFormPage> {
   FocusNode emailNode;
   FocusNode passwordNode;
   FocusNode bioNode;
+  FocusNode githubNode;
+  FocusNode numberPhoneNode;
+  FocusNode twitterNode;
 
   int stage = -1;
   int gender = -1;
@@ -59,6 +65,10 @@ class _UserFormPageState extends State<UserFormPage> {
     password = new TextEditingController();
     email = new TextEditingController(text: user.email);
     bio = new TextEditingController(text: user.bio);
+    password = new TextEditingController();
+    github = new TextEditingController(text: user.github);
+    numberPhone = new TextEditingController(text: user.numberPhone);
+    twitter = new TextEditingController(text: user.twitter);
     stage = user.stage ?? -1;
     gender = user.gender ?? -1;
 
@@ -68,6 +78,9 @@ class _UserFormPageState extends State<UserFormPage> {
     passwordNode = new FocusNode();
     emailNode = new FocusNode();
     bioNode = new FocusNode();
+    githubNode = new FocusNode();
+    numberPhoneNode = new FocusNode();
+    twitterNode = new FocusNode();
   }
 
   @override
@@ -78,6 +91,9 @@ class _UserFormPageState extends State<UserFormPage> {
     username.dispose();
     password.dispose();
     bio.dispose();
+    github.dispose();
+    numberPhone.dispose();
+    twitter.dispose();
 
     firstNameNode.dispose();
     lastNameNode.dispose();
@@ -85,6 +101,9 @@ class _UserFormPageState extends State<UserFormPage> {
     usernameNode.dispose();
     passwordNode.dispose();
     bioNode.dispose();
+    githubNode.dispose();
+    twitterNode.dispose();
+    numberPhoneNode.dispose();
 
     super.dispose();
   }
@@ -220,6 +239,44 @@ class _UserFormPageState extends State<UserFormPage> {
                           return null;
                         },
                       ),
+                      UserTextField(
+                        controller: github,
+                        focusNode: githubNode,
+                        hintText: 'GitHub',
+                        icon: Icons.alternate_email,
+                        inputType: TextInputType.text,
+                        action: TextInputAction.next,
+                        validator: (value) {
+                          final validState = validateUsername(value);
+
+                          if (validState == UserNameValidation.Invalid)
+                            return Strings.enterValidUsername;
+                          return null;
+                        },
+                      ),
+                      UserTextField(
+                        controller: twitter,
+                        focusNode: twitterNode,
+                        hintText: 'Twitter',
+                        icon: Icons.alternate_email,
+                        inputType: TextInputType.text,
+                        action: TextInputAction.next,
+                        validator: (value) {
+                          final validState = validateUsername(value);
+
+                          if (validState == UserNameValidation.Invalid)
+                            return Strings.enterValidUsername;
+                          return null;
+                        },
+                      ),
+                      UserTextField(
+                        controller: numberPhone,
+                        focusNode: numberPhoneNode,
+                        hintText: 'Whatsapp',
+                        icon: Icons.phone,
+                        inputType: TextInputType.text,
+                        action: TextInputAction.next,
+                      ),
                       Container(
                         margin: const EdgeInsets.all(5),
                         child: DropdownButton<int>(
@@ -289,6 +346,12 @@ class _UserFormPageState extends State<UserFormPage> {
           email: email.text.trim() != user.email ? email.text.trim() : null,
           username: username.text.trim() != user.username
               ? username.text.trim()
+              : null,
+          github: github.text.trim() != user.github ? github.text.trim() : null,
+          twitter:
+              twitter.text.trim() != user.twitter ? twitter.text.trim() : null,
+          numberPhone: numberPhone.text.trim() != user.numberPhone
+              ? numberPhone.text.trim()
               : null,
           password: password.text.trim().isNotEmpty ? password.text : null,
           bio: bio.text != user.bio ? bio.text.trim() : null,

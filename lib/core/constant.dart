@@ -7,6 +7,7 @@ const POST_KEY = 'POSTS';
 const COMMENT_KEY = 'COMMENTS';
 const TOKEN_KEY = 'TOKEN';
 const SETTINGS_KEY = 'SETTINGS';
+const DSC_PLATFORM = 'DSC Platform';
 
 /// Const Server Data
 const server_ip = '172.105.245.119';

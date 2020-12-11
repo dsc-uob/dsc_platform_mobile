@@ -7,6 +7,7 @@ import 'core/db/entities.dart';
 import 'core/utils/app_localizations.dart';
 import 'core/utils/dsc_route.dart' as route;
 import 'core/utils/strings.dart';
+import 'features/media/presentation/blocs/image/image_bloc.dart';
 import 'features/post/presentation/blocs/post/post_bloc.dart';
 import 'features/post/presentation/pages/post_page.dart';
 import 'features/settings/presentation/bloc/settings_bloc.dart';
@@ -128,15 +129,22 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    currentPage = 1;
+    currentPage = 0;
     screens = [
       BlocProvider<PostBloc>(
         create: (context) => sl<PostBloc>()..add(FetchPosts()),
         child: PostPage(),
       ),
       Container(
-        child: BlocProvider<PostBloc>(
-          create: (context) => sl<PostBloc>()..add(FetchUserPosts(user.id)),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<PostBloc>(
+              create: (context) => sl<PostBloc>()..add(FetchUserPosts(user.id)),
+            ),
+            BlocProvider<ImageBloc>(
+              create: (context) => sl<ImageBloc>()..add(FetchImages(user.id)),
+            ),
+          ],
           child: AccountPage(),
         ),
       ),

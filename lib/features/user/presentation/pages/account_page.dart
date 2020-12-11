@@ -4,12 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../../core/constant.dart';
+import '../../../../core/db/entities.dart';
 import '../../../../core/utils/dsc_route.dart' as route;
 import '../../../../core/utils/strings.dart';
-import '../../../post/presentation/blocs/post/post_bloc.dart';
-import '../../../post/presentation/widgets/post_card.dart';
+import '../../../media/presentation/widgets/images_list.dart';
 import '../blocs/authentication/authentication_bloc.dart';
 import '../blocs/user/user_bloc.dart';
+import '../widgets/posts_list.dart';
 import '../widgets/social_button.dart';
 
 class AccountPage extends StatefulWidget {
@@ -23,51 +24,43 @@ class _AccountPageState extends State<AccountPage> {
     Strings.context = context;
     setStatusBarColor(StatusBarState.Opacity);
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (_, b) => [
-          SliverPersistentHeader(
-            floating: true,
-            pinned: true,
-            delegate: AccountAppBarDelegate(),
-          ),
-        ],
-        body: BlocBuilder<PostBloc, PostState>(
-          builder: (context, state) {
-            if (state is PostsSuccessfulLoaded) {
-              if (state.posts.isEmpty)
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/annotation.svg',
-                        height: 150,
-                      ),
-                      Text('No Posts..')
-                    ],
+      body: DefaultTabController(
+        length: 2,
+        child: NestedScrollView(
+          headerSliverBuilder: (_, b) => [
+            SliverPersistentHeader(
+              floating: true,
+              pinned: true,
+              delegate: AccountAppBarDelegate(),
+            ),
+          ],
+          body: Column(
+            children: [
+              TabBar(
+                indicatorColor: Theme.of(context).accentColor,
+                indicatorSize: TabBarIndicatorSize.label,
+                labelColor: Theme.of(context).accentColor,
+                tabs: [
+                  Tab(
+                    text: 'Posts',
+                    icon: Icon(Icons.description),
                   ),
-                );
-              return ListView.separated(
-                physics: BouncingScrollPhysics(),
-                padding: const EdgeInsets.all(8.0),
-                itemCount: state.posts.length,
-                itemBuilder: (context, index) => PostCard(
-                  post: state.posts[index],
+                  Tab(
+                    text: 'Images',
+                    icon: Icon(Icons.image),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    PostsList(),
+                    ImagesList(),
+                  ],
                 ),
-                separatorBuilder: (_, i) => SizedBox(
-                  height: 5,
-                ),
-              );
-            }
-
-            if (state is PostsFailedLoad) {
-              return Center(
-                child: Text('${state.failure}'),
-              );
-            }
-
-            return Center(child: CircularProgressIndicator());
-          },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -75,11 +68,14 @@ class _AccountPageState extends State<AccountPage> {
 }
 
 class AccountAppBarDelegate extends SliverPersistentHeaderDelegate {
+  bool _currentLogin(BuildContext context, User user) =>
+      user.id == BlocProvider.of<AuthenticationBloc>(context).user.id;
+
   @override
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     double rest = 1 - (shrinkOffset / maxExtent);
-    final height = 105 - ((shrinkOffset / maxExtent) * 10);
+    final height = 100 - ((shrinkOffset / maxExtent) * 10);
     final width = 75 - ((shrinkOffset / maxExtent) * 10);
 
     return Container(
@@ -111,38 +107,47 @@ class AccountAppBarDelegate extends SliverPersistentHeaderDelegate {
                         color: Theme.of(context).accentColor,
                         child: IconButton(
                           icon: Icon(
-                            Icons.logout,
+                            _currentLogin(context, state.user)
+                                ? Navigator.canPop(context)
+                                    ? Icons.arrow_back_ios
+                                    : Icons.logout
+                                : Icons.arrow_back_ios,
                             color: Colors.white,
                           ),
                           tooltip: Strings.logout,
                           onPressed: () =>
-                              BlocProvider.of<AuthenticationBloc>(context)
-                                  .add(NowLogout()),
+                              !_currentLogin(context, state.user) ||
+                                      Navigator.canPop(context)
+                                  ? Navigator.pop(context)
+                                  : BlocProvider.of<AuthenticationBloc>(context)
+                                      .add(NowLogout()),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: OutlineButton(
-                          onPressed: () => Navigator.pushNamed(
-                            context,
-                            route.user_form,
-                            arguments: {
-                              'context': context,
-                              'user': state.user,
-                            },
-                          ),
-                          child: Text(
-                            Strings.edit,
-                            style: Theme.of(context).primaryTextTheme.subtitle2,
-                          ),
-                          borderSide: BorderSide(color: Colors.white70),
-                          splashColor: Colors.white54,
-                          highlightedBorderColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
+                      if (_currentLogin(context, state.user))
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: OutlineButton(
+                            onPressed: () => Navigator.pushNamed(
+                              context,
+                              route.user_form,
+                              arguments: {
+                                'context': context,
+                                'user': state.user,
+                              },
+                            ),
+                            child: Text(
+                              Strings.edit,
+                              style:
+                                  Theme.of(context).primaryTextTheme.subtitle2,
+                            ),
+                            borderSide: BorderSide(color: Colors.white70),
+                            splashColor: Colors.white54,
+                            highlightedBorderColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 SafeArea(
@@ -211,9 +216,21 @@ class AccountAppBarDelegate extends SliverPersistentHeaderDelegate {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  SocialIconButton(),
-                                  SocialIconButton(),
-                                  SocialIconButton(),
+                                  if (state.user.github != null)
+                                    SocialIconButton(
+                                      type: SocialIconButtonType.GitHub,
+                                      data: state.user.github,
+                                    ),
+                                  if (state.user.twitter != null)
+                                    SocialIconButton(
+                                      type: SocialIconButtonType.Twitter,
+                                      data: state.user.twitter,
+                                    ),
+                                  if (state.user.numberPhone != null)
+                                    SocialIconButton(
+                                      type: SocialIconButtonType.NumberPhone,
+                                      data: state.user.numberPhone,
+                                    ),
                                 ],
                               ),
                           ],

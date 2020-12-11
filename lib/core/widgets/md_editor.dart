@@ -1,7 +1,15 @@
+import 'dart:io';
+
+import 'package:dsc_platform/core/utils/cubits/uploadtask_cubit.dart';
+import 'package:dsc_platform/features/user/presentation/blocs/user/user_bloc.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:giphy_get/giphy_get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
+import '../../initial.dart';
 import '../utils/strings.dart';
 
 enum MDStyleType {
@@ -304,6 +312,13 @@ class _MDEditorState extends State<MDEditor> {
         if (result != null) _addToBottom("[${result[0]}](${result[1]})");
         break;
 
+      case MDStyleType.Image:
+        final result = await _showImageDialog(
+          title: Strings.image,
+        );
+        if (result != null) _addToBottom("![Image]($result)");
+        break;
+
       default:
     }
   }
@@ -356,6 +371,80 @@ class _MDEditorState extends State<MDEditor> {
             onPressed: () => Navigator.pop(context),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<String> _showImageDialog({
+    @required String title,
+  }) async {
+    assert(title != null);
+    return await showDialog(
+      context: context,
+      builder: (context) => BlocProvider<UploadtaskCubit>(
+        create: (context) => sl<UploadtaskCubit>(),
+        child: AlertDialog(
+          title: Text(title),
+          content: BlocConsumer<UploadtaskCubit, UploadtaskState>(
+            listener: (context, state) async {
+              if (state is UploadtaskSuccess) {
+                await Future.delayed(Duration(seconds: 3));
+                Navigator.pop(context, state.url);
+              }
+            },
+            builder: (context, state) {
+              if (state is UploadtaskProgress) {
+                return CircularPercentIndicator(
+                  radius: 100.0,
+                  lineWidth: 5,
+                  percent: state.progress,
+                  center: new Text("${state.progress.toStringAsFixed(2)}%"),
+                  progressColor: Theme.of(context).accentColor,
+                );
+              }
+
+              if (state is UploadtaskSuccess) {
+                return CircularPercentIndicator(
+                  radius: 100.0,
+                  lineWidth: 5,
+                  percent: 1.0,
+                  center: new Text("Successful!"),
+                  progressColor: Colors.green,
+                );
+              }
+
+              if (state is UploadtaskFailed) {
+                return Text('${state.failure}');
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  RaisedButton(
+                    child: Text('Gallery'),
+                    onPressed: () async {
+                      final image = await ImagePicker()
+                          .getImage(source: ImageSource.gallery);
+                      if (image != null)
+                        BlocProvider.of<UploadtaskCubit>(context)
+                            .uploadImage(File(image.path));
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text('Camera'),
+                    onPressed: () async {
+                      final image = await ImagePicker().getImage(
+                          source: ImageSource.camera, imageQuality: 75);
+                      if (image != null)
+                        BlocProvider.of<UploadtaskCubit>(context)
+                            .uploadImage(File(image.path));
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
     );
   }

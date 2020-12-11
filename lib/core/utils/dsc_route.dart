@@ -1,10 +1,11 @@
-import 'package:dsc_platform/features/post/presentation/blocs/comment/comment_bloc.dart';
-import 'package:dsc_platform/features/post/presentation/blocs/post/post_bloc.dart';
-import 'package:dsc_platform/features/post/presentation/pages/comments_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../features/media/presentation/blocs/image/image_bloc.dart';
+import '../../features/post/presentation/blocs/comment/comment_bloc.dart';
+import '../../features/post/presentation/blocs/post/post_bloc.dart';
+import '../../features/post/presentation/pages/comments_page.dart';
 import '../../features/post/presentation/pages/post_form_page.dart';
 import '../../features/post/presentation/pages/post_viewer_page.dart';
 import '../../features/user/presentation/blocs/login/login_bloc.dart';
@@ -15,13 +16,16 @@ import '../../features/user/presentation/pages/login_page.dart';
 import '../../features/user/presentation/pages/register_page.dart';
 import '../../features/user/presentation/pages/user_form_page.dart';
 import '../../initial.dart';
+import '../db/entities.dart';
 import 'strings.dart';
 
 const login = '/login';
 const register = '/register';
 const account = '/account';
+const member_account = '/member_account';
 const user_form = '/user_form';
 const post_form = '/post_form';
+const post_edit_form = '/post_edit_mode';
 const post_view = '/post_view';
 const comment_page = '/comment_page';
 
@@ -52,6 +56,27 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           child: AccountPage(),
         ),
       );
+    case member_account:
+      if (args is User)
+        return MaterialPageRoute(
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider<UserBloc>(
+                create: (context) =>
+                    sl<UserBloc>()..add(FetchMemberAccount(args)),
+              ),
+              BlocProvider<PostBloc>(
+                create: (context) =>
+                    sl<PostBloc>()..add(FetchUserPosts(args.id)),
+              ),
+              BlocProvider<ImageBloc>(
+                create: (context) => sl<ImageBloc>()..add(FetchImages(args.id)),
+              ),
+            ],
+            child: AccountPage(),
+          ),
+        );
+      return MaterialPageRoute(builder: (_) => ErrorPage());
     case user_form:
       if (args is Map)
         return MaterialPageRoute(
@@ -64,11 +89,16 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         );
       break;
     case post_view:
-      return MaterialPageRoute(
-        builder: (_) => PostViewerPage(
-          post: args,
-        ),
-      );
+      if (args is Map)
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: BlocProvider.of<PostBloc>(args['context']),
+            child: PostViewerPage(
+              post: args['post'],
+            ),
+          ),
+        );
+      return MaterialPageRoute(builder: (_) => ErrorPage());
     case post_form:
       return MaterialPageRoute(
         builder: (_) => BlocProvider.value(
@@ -76,6 +106,18 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           child: PostFormPage(),
         ),
       );
+    case post_edit_form:
+      if (args is Map)
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: BlocProvider.of<PostBloc>(args['context']),
+            child: PostFormPage(
+              isEdit: true,
+              post: args['post'],
+            ),
+          ),
+        );
+      return MaterialPageRoute(builder: (_) => ErrorPage());
     case comment_page:
       return MaterialPageRoute(
         builder: (_) => BlocProvider<CommentBloc>(

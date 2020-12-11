@@ -10,12 +10,12 @@ abstract class UserEvent extends Equatable {
 class FetchMyAccount extends UserEvent {}
 
 class FetchMemberAccount extends UserEvent {
-  final int id;
+  final User user;
 
-  const FetchMemberAccount(this.id);
+  const FetchMemberAccount(this.user);
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [user];
 }
 
 class UpdateMyAccount extends UserEvent {

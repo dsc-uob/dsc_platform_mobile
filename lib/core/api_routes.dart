@@ -19,6 +19,6 @@ const posts_url = post_sys_api_url + '/posts/';
 const comments_url = post_sys_api_url + '/comments/';
 
 /// Media urls
-const media_url = api_url + '/media';
+const media_url = api_url + '/dsc_media/';
 
-const image_url = media_url + '/image/';
+const image_url = media_url + 'image/';

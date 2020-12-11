@@ -24,7 +24,10 @@ class PostCard extends StatelessWidget {
           onTap: () => Navigator.pushNamed(
             context,
             post_view,
-            arguments: post,
+            arguments: {
+              'context': context,
+              'post': post,
+            },
           ),
           child: Column(
             children: [
@@ -58,16 +61,23 @@ class PostCard extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Colors.transparent,
-                            backgroundImage: post.user.photo != null
-                                ? CachedNetworkImageProvider(post.user.photo)
-                                : null,
-                            child: post.user.photo != null
-                                ? null
-                                : SvgPicture.asset(
-                                    'assets/images/profile_pic.svg'),
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              member_account,
+                              arguments: post.user,
+                            ),
+                            child: CircleAvatar(
+                              radius: 25,
+                              backgroundColor: Colors.transparent,
+                              backgroundImage: post.user.photo != null
+                                  ? CachedNetworkImageProvider(post.user.photo)
+                                  : null,
+                              child: post.user.photo != null
+                                  ? null
+                                  : SvgPicture.asset(
+                                      'assets/images/profile_pic.svg'),
+                            ),
                           ),
                           SizedBox(
                             width: 5,

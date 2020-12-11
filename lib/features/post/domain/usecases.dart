@@ -15,13 +15,13 @@ class GetPosts extends UseCase<List<Post>, LimitOffsetPagination> {
   Future<Either<Failure, List<Post>>> call(params) => repository.get(params);
 }
 
-class GetUserPosts extends UseCase<List<Post>, UserPostsParams> {
+class GetUserPosts extends UseCase<List<Post>, IdLimitOffsetParams> {
   final PostRepository repository;
 
   GetUserPosts(this.repository);
 
   @override
-  Future<Either<Failure, List<Post>>> call(UserPostsParams params) =>
+  Future<Either<Failure, List<Post>>> call(IdLimitOffsetParams params) =>
       repository.getUserPost(params);
 }
 
@@ -52,7 +52,7 @@ class DeletePost extends UseCase<void, int> {
   Future<Either<Failure, void>> call(params) => repository.delete(params);
 }
 
-class GetComments extends UseCase<List<Comment>, CommentsFetchParams> {
+class GetComments extends UseCase<List<Comment>, IdLimitOffsetParams> {
   final CommentRepository repository;
 
   GetComments(this.repository);

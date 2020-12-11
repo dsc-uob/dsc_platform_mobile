@@ -1,16 +1,21 @@
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:dio/dio.dart';
-import 'package:dsc_platform/features/post/presentation/blocs/comment/comment_bloc.dart';
+import 'package:dsc_platform/features/media/data/data_sources.dart';
+import 'package:dsc_platform/features/media/data/repositories_impl.dart';
+import 'package:dsc_platform/features/media/domain/usecases.dart';
+import 'package:dsc_platform/features/media/presentation/blocs/image/image_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/utils/authentication_manager.dart';
 import 'core/utils/cache_manager.dart';
+import 'core/utils/cubits/uploadtask_cubit.dart';
 import 'core/utils/network_info.dart';
 import 'features/post/data/data_sources.dart';
 import 'features/post/data/repositories_impl.dart';
 import 'features/post/domain/usecases.dart';
+import 'features/post/presentation/blocs/comment/comment_bloc.dart';
 import 'features/post/presentation/blocs/post/post_bloc.dart';
 import 'features/settings/data/datasources.dart';
 import 'features/settings/data/repositories_impl.dart';
@@ -73,6 +78,12 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => CommentLocalDataSourceImpl(sl()),
   );
+  sl.registerLazySingleton(
+    () => ImageLocalDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton(
+    () => ImageRemoteDataSourceImpl(sl(), sl()),
+  );
 
   //! Repositories
   sl.registerLazySingleton(
@@ -98,6 +109,13 @@ Future<void> init() async {
       networkInfo: sl<NetworkInfoImpl>(),
       localDataSource: sl<CommentLocalDataSourceImpl>(),
       remoteDataSource: sl<CommentRemoteDataSourceImpl>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => ImageRepositoryImpl(
+      networkInfo: sl<NetworkInfoImpl>(),
+      localDataSource: sl<ImageLocalDataSourceImpl>(),
+      remoteDataSource: sl<ImageRemoteDataSourceImpl>(),
     ),
   );
 
@@ -156,6 +174,12 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => DeleteComment(sl<CommentRepositoryImpl>()),
   );
+  sl.registerLazySingleton(
+    () => GetUserImage(sl<ImageRepositoryImpl>()),
+  );
+  sl.registerLazySingleton(
+    () => DeleteUserImage(sl<ImageRepositoryImpl>()),
+  );
 
   //! Blocs
   sl.registerFactory(
@@ -193,6 +217,17 @@ Future<void> init() async {
       createComment: sl(),
       updateComment: sl(),
       deleteComment: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => ImageBloc(sl(), sl()),
+  );
+
+  //! Cubit
+  sl.registerFactory(
+    () => UploadtaskCubit(
+      dio: sl(),
+      authManager: sl(),
     ),
   );
 }

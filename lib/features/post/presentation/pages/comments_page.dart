@@ -1,10 +1,10 @@
-import 'package:dsc_platform/features/user/presentation/blocs/authentication/authentication_bloc.dart';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../user/presentation/blocs/authentication/authentication_bloc.dart';
 import '../../domain/entities.dart';
 import '../../domain/forms.dart';
 import '../blocs/comment/comment_bloc.dart';
@@ -95,6 +95,7 @@ class _CommentsPageState extends State<CommentsPage> {
               },
               builder: (context, state) {
                 if (state is CommentSuccessfulLoaded) {
+                  if (state.comments.isEmpty) return _buildNoComment();
                   return ListView.separated(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -117,18 +118,7 @@ class _CommentsPageState extends State<CommentsPage> {
                   );
                 }
 
-                if (state is CommentFailedLoad) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/images/public_discussion.svg',
-                        height: 300,
-                      ),
-                      Text('No Comments!'),
-                    ],
-                  );
-                }
+                if (state is CommentFailedLoad) return _buildNoComment();
 
                 return Center(
                   child: CircularProgressIndicator(),
@@ -139,6 +129,19 @@ class _CommentsPageState extends State<CommentsPage> {
           _buildComment(),
         ],
       ),
+    );
+  }
+
+  Widget _buildNoComment() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SvgPicture.asset(
+          'assets/images/public_discussion.svg',
+          height: 300,
+        ),
+        Text('No Comments!'),
+      ],
     );
   }
 

@@ -2,13 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 
+import '../../../../core/errors/exceptions.dart';
 import '../../../../core/utils/strings.dart';
 import '../../../../core/widgets/md_editor.dart';
 import '../../../../core/widgets/md_viewer.dart';
+import '../../domain/entities.dart';
 import '../../domain/forms.dart';
 import '../blocs/post/post_bloc.dart';
 
 class PostFormPage extends StatefulWidget {
+  final bool isEdit;
+  final Post post;
+
+  const PostFormPage({
+    Key key,
+    this.isEdit: false,
+    this.post,
+  }) : super(key: key);
+
   @override
   _PostFormPageState createState() => _PostFormPageState();
 }
@@ -19,9 +30,16 @@ class _PostFormPageState extends State<PostFormPage> {
 
   TextDirection _textDirection;
 
+  bool get isEdit => widget.isEdit;
+  Post get post => widget.post;
+
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    if (isEdit && post == null) throw NoPostOnEditModeException();
+
+    _controller = TextEditingController(
+      text: isEdit ? post.body : null,
+    );
     _tocController = TocController();
     _textDirection = TextDirection.ltr;
 
@@ -67,7 +85,9 @@ class _PostFormPageState extends State<PostFormPage> {
               icon: Icon(Icons.save),
               tooltip: Strings.save,
               onPressed: () async {
-                final controller = new TextEditingController();
+                final controller = new TextEditingController(
+                  text: isEdit ? post.title : null,
+                );
                 final title = await showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -93,12 +113,22 @@ class _PostFormPageState extends State<PostFormPage> {
                 );
 
                 if (title != null) {
-                  BlocProvider.of<PostBloc>(context).add(
-                    CreatePostEvent(CreatePostForm(
-                      title,
-                      _controller.text.trim(),
-                    )),
-                  );
+                  if (isEdit) {
+                    BlocProvider.of<PostBloc>(context).add(
+                      UpdatePostEvent(UpdatePostForm(
+                        id: post.id,
+                        title: title,
+                        body: _controller.text.trim(),
+                      )),
+                    );
+                  } else {
+                    BlocProvider.of<PostBloc>(context).add(
+                      CreatePostEvent(CreatePostForm(
+                        title,
+                        _controller.text.trim(),
+                      )),
+                    );
+                  }
                   Navigator.pop(context);
                 }
               },
