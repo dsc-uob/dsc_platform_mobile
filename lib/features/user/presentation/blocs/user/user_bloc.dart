@@ -30,6 +30,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Stream<UserState> mapEventToState(
     UserEvent event,
   ) async* {
+    final currentState = state;
     yield LoadFetchAccount();
     if (event is FetchMyAccount) {
       final result = await currentUser();
@@ -39,12 +40,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       );
     }
     if (event is FetchMemberAccount) {
-      // yield LoadFetchAccount();
-      // final result = await getUser(event.id);
-      // yield result.fold(
-      //   (l) => FieldFetchAccount(l),
-      //   (r) => SuccessFetchAccount(r),
-      // );
       yield SuccessFetchAccount(event.user);
     }
     if (event is UpdateMyAccount) {
@@ -53,6 +48,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       yield result.fold(
         (l) => FieldUpdateAccount(l),
         (r) => SuccessUpdateAccount(r),
+      );
+    }
+
+    if (event is UserImageUpdated && currentState is SuccessUpdateAccount) {
+      yield SuccessUpdateAccount(
+        currentState.user.copyWith(
+          photo: event.photo,
+        ),
       );
     }
   }

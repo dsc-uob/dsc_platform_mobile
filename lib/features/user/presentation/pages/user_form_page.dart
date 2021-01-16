@@ -1,12 +1,20 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 import '../../../../core/constant.dart';
 import '../../../../core/db/entities.dart';
+import '../../../../core/utils/cubits/uploadtask_cubit.dart';
 import '../../../../core/utils/strings.dart';
 import '../../../../core/utils/tools.dart';
+import '../../../../initial.dart';
 import '../../domain/forms.dart';
 import '../blocs/user/user_bloc.dart';
 import '../widgets/user_text_field.dart';
@@ -158,10 +166,47 @@ class _UserFormPageState extends State<UserFormPage> {
                         height: 100,
                         width: 100,
                         margin: const EdgeInsets.all(16),
-                        child: CircleAvatar(
-                          backgroundColor: secondColor,
-                          child:
-                              SvgPicture.asset('assets/images/profile_pic.svg'),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).primaryColor,
+                              blurRadius: 2,
+                              spreadRadius: 0.5,
+                            )
+                          ],
+                        ),
+                        child: Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundColor: secondColor,
+                              backgroundImage: state.user.photo != null
+                                  ? CachedNetworkImageProvider(state.user.photo)
+                                  : null,
+                              child: state.user.photo != null
+                                  ? null
+                                  : SvgPicture.asset(
+                                      'assets/images/profile_pic.svg'),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black26,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              left: 0,
+                              child: IconButton(
+                                icon: Icon(Icons.camera),
+                                onPressed: () => _showImageDialog(
+                                    title: 'Change User Photo'),
+                                color: Theme.of(context).cardColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       UserTextField(
@@ -247,6 +292,8 @@ class _UserFormPageState extends State<UserFormPage> {
                         inputType: TextInputType.text,
                         action: TextInputAction.next,
                         validator: (value) {
+                          if (value.isEmpty) return null;
+
                           final validState = validateUsername(value);
 
                           if (validState == UserNameValidation.Invalid)
@@ -262,6 +309,7 @@ class _UserFormPageState extends State<UserFormPage> {
                         inputType: TextInputType.text,
                         action: TextInputAction.next,
                         validator: (value) {
+                          if (value.isEmpty) return null;
                           final validState = validateUsername(value);
 
                           if (validState == UserNameValidation.Invalid)
@@ -375,5 +423,110 @@ class _UserFormPageState extends State<UserFormPage> {
     bio.text = user.bio;
     stage = user.stage;
     gender = user.gender;
+  }
+
+  Future<String> _showImageDialog({
+    @required String title,
+  }) async {
+    assert(title != null);
+    return await showDialog(
+      context: context,
+      builder: (context) => BlocProvider<UploadtaskCubit>(
+        create: (context) => sl<UploadtaskCubit>(),
+        child: AlertDialog(
+          title: Text(title),
+          content: BlocConsumer<UploadtaskCubit, UploadtaskState>(
+            listener: (context, state) async {
+              if (state is UploadtaskSuccess) {
+                await Future.delayed(Duration(seconds: 2));
+                userBloc.add(UserImageUpdated(state.url));
+                Navigator.pop(context);
+              }
+            },
+            builder: (context, state) {
+              if (state is UploadtaskProgress) {
+                return CircularPercentIndicator(
+                  radius: 100.0,
+                  lineWidth: 5,
+                  percent: state.progress,
+                  center:
+                      new Text("${(state.progress * 100).toStringAsFixed(2)}%"),
+                  progressColor: Theme.of(context).accentColor,
+                );
+              }
+
+              if (state is UploadtaskSuccess) {
+                return CircularPercentIndicator(
+                  radius: 100.0,
+                  lineWidth: 5,
+                  percent: 1.0,
+                  center: new Text("Successful!"),
+                  progressColor: Colors.green,
+                );
+              }
+
+              if (state is UploadtaskFailed) {
+                return Text('${state.failure}');
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  RaisedButton(
+                    child: Text('Gallery'),
+                    onPressed: () async {
+                      final image = await _getImage(ImageSource.gallery);
+                      if (image != null)
+                        BlocProvider.of<UploadtaskCubit>(context).uploadImage(
+                          File(image.path),
+                          isUserImage: true,
+                        );
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text('Camera'),
+                    onPressed: () async {
+                      final image = await _getImage(ImageSource.camera);
+                      if (image != null)
+                        BlocProvider.of<UploadtaskCubit>(context).uploadImage(
+                          File(image.path),
+                          isUserImage: true,
+                        );
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<File> _getImage(ImageSource source) async {
+    final pickedImage = await ImagePicker().getImage(
+      source: source,
+      imageQuality: source == ImageSource.camera ? 75 : null,
+    );
+
+    if(pickedImage==null){
+      return null;
+    }
+
+    final image = await ImageCropper.cropImage(
+      sourcePath: pickedImage.path,
+      aspectRatioPresets: CropAspectRatioPreset.values,
+      androidUiSettings: AndroidUiSettings(
+        toolbarTitle: 'Cropper',
+        toolbarColor: Theme.of(context).primaryColor,
+        initAspectRatio: CropAspectRatioPreset.original,
+        lockAspectRatio: false,
+      ),
+      iosUiSettings: IOSUiSettings(
+        minimumAspectRatio: 1.0,
+      ),
+    );
+
+    return image;
   }
 }

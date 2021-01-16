@@ -8,7 +8,7 @@ import '../../../post/presentation/widgets/post_card.dart';
 class PostsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PostBloc, PostState>(
+    return BlocBuilder<UserPostBloc, PostState>(
       builder: (context, state) {
         if (state is PostsSuccessfulLoaded) {
           if (state.posts.isEmpty)

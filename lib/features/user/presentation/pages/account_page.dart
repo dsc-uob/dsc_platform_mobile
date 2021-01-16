@@ -216,17 +216,20 @@ class AccountAppBarDelegate extends SliverPersistentHeaderDelegate {
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  if (state.user.github != null)
+                                  if (state.user.github != null &&
+                                      state.user.github.isNotEmpty)
                                     SocialIconButton(
                                       type: SocialIconButtonType.GitHub,
                                       data: state.user.github,
                                     ),
-                                  if (state.user.twitter != null)
+                                  if (state.user.twitter != null &&
+                                      state.user.twitter.isNotEmpty)
                                     SocialIconButton(
                                       type: SocialIconButtonType.Twitter,
                                       data: state.user.twitter,
                                     ),
-                                  if (state.user.numberPhone != null)
+                                  if (state.user.numberPhone != null &&
+                                      state.user.numberPhone.isNotEmpty)
                                     SocialIconButton(
                                       type: SocialIconButtonType.NumberPhone,
                                       data: state.user.numberPhone,

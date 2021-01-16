@@ -26,3 +26,12 @@ class UpdateMyAccount extends UserEvent {
   @override
   List<Object> get props => [form];
 }
+
+class UserImageUpdated extends UserEvent{
+  final String photo;
+
+  const UserImageUpdated(this.photo);
+
+  @override
+  List<Object> get props => [photo];
+}
