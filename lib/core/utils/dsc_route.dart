@@ -1,3 +1,6 @@
+import 'package:dsc_platform/features/chat/domain/entities.dart';
+import 'package:dsc_platform/features/chat/presentation/blocs/chat_message/chat_message_bloc.dart';
+import 'package:dsc_platform/features/chat/presentation/pages/chat_session_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -28,6 +31,7 @@ const post_form = '/post_form';
 const post_edit_form = '/post_edit_mode';
 const post_view = '/post_view';
 const comment_page = '/comment_page';
+const session_message_page = '/session_message_page';
 
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final args = settings.arguments;
@@ -65,9 +69,9 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
                 create: (context) =>
                     sl<UserBloc>()..add(FetchMemberAccount(args)),
               ),
-              BlocProvider<PostBloc>(
+              BlocProvider<UserPostBloc>(
                 create: (context) =>
-                    sl<PostBloc>()..add(FetchUserPosts(args.id)),
+                    sl<UserPostBloc>()..add(FetchUserPosts(args.id)),
               ),
               BlocProvider<ImageBloc>(
                 create: (context) => sl<ImageBloc>()..add(FetchImages(args.id)),
@@ -92,7 +96,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       if (args is Map)
         return MaterialPageRoute(
           builder: (_) => BlocProvider.value(
-            value: BlocProvider.of<PostBloc>(args['context']),
+            value: BlocProvider.of<GeneralPostBloc>(args['context']),
             child: PostViewerPage(
               post: args['post'],
             ),
@@ -102,7 +106,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     case post_form:
       return MaterialPageRoute(
         builder: (_) => BlocProvider.value(
-          value: BlocProvider.of<PostBloc>(args),
+          value: BlocProvider.of<GeneralPostBloc>(args),
           child: PostFormPage(),
         ),
       );
@@ -110,7 +114,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
       if (args is Map)
         return MaterialPageRoute(
           builder: (_) => BlocProvider.value(
-            value: BlocProvider.of<PostBloc>(args['context']),
+            value: BlocProvider.of<GeneralPostBloc>(args['context']),
             child: PostFormPage(
               isEdit: true,
               post: args['post'],
@@ -125,6 +129,19 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
           child: CommentsPage(),
         ),
       );
+    case session_message_page:
+      if (args is LimitChatSession) {
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider<ChatMessageBloc>(
+            create: (_) =>
+                sl<ChatMessageBloc>()..add(FetchChatMessages(args.id)),
+            child: ChatSessionPage(
+              limitChatSession: args,
+            ),
+          ),
+        );
+      }
+      return MaterialPageRoute(builder: (_) => ErrorPage());
     default:
       return MaterialPageRoute(builder: (_) => ErrorPage());
   }

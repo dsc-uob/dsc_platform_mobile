@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:dsc_platform/core/utils/cubits/uploadtask_cubit.dart';
-import 'package:dsc_platform/features/user/presentation/blocs/user/user_bloc.dart';
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:giphy_get/giphy_get.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 import '../../initial.dart';
+import '../utils/cubits/uploadtask_cubit.dart';
 import '../utils/strings.dart';
 
 enum MDStyleType {
@@ -388,7 +388,7 @@ class _MDEditorState extends State<MDEditor> {
           content: BlocConsumer<UploadtaskCubit, UploadtaskState>(
             listener: (context, state) async {
               if (state is UploadtaskSuccess) {
-                await Future.delayed(Duration(seconds: 3));
+                await Future.delayed(Duration(seconds: 2));
                 Navigator.pop(context, state.url);
               }
             },
@@ -398,7 +398,8 @@ class _MDEditorState extends State<MDEditor> {
                   radius: 100.0,
                   lineWidth: 5,
                   percent: state.progress,
-                  center: new Text("${state.progress.toStringAsFixed(2)}%"),
+                  center:
+                      new Text("${(state.progress * 100).toStringAsFixed(2)}%"),
                   progressColor: Theme.of(context).accentColor,
                 );
               }
@@ -423,8 +424,7 @@ class _MDEditorState extends State<MDEditor> {
                   RaisedButton(
                     child: Text('Gallery'),
                     onPressed: () async {
-                      final image = await ImagePicker()
-                          .getImage(source: ImageSource.gallery);
+                      final image = await _getImage(ImageSource.gallery);
                       if (image != null)
                         BlocProvider.of<UploadtaskCubit>(context)
                             .uploadImage(File(image.path));
@@ -433,11 +433,9 @@ class _MDEditorState extends State<MDEditor> {
                   RaisedButton(
                     child: Text('Camera'),
                     onPressed: () async {
-                      final image = await ImagePicker().getImage(
-                          source: ImageSource.camera, imageQuality: 75);
-                      if (image != null)
-                        BlocProvider.of<UploadtaskCubit>(context)
-                            .uploadImage(File(image.path));
+                      final image = await _getImage(ImageSource.camera);
+                      BlocProvider.of<UploadtaskCubit>(context)
+                          .uploadImage(File(image.path));
                     },
                   ),
                 ],
@@ -447,6 +445,29 @@ class _MDEditorState extends State<MDEditor> {
         ),
       ),
     );
+  }
+
+  Future<File> _getImage(ImageSource source) async {
+    final pickedImage = await ImagePicker().getImage(
+      source: source,
+      imageQuality: source == ImageSource.camera ? 75 : null,
+    );
+
+    final image = await ImageCropper.cropImage(
+      sourcePath: pickedImage.path,
+      aspectRatioPresets: CropAspectRatioPreset.values,
+      androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Cropper',
+          toolbarColor: Colors.deepOrange,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false),
+      iosUiSettings: IOSUiSettings(
+        minimumAspectRatio: 1.0,
+      ),
+    );
+
+    return image;
   }
 }
 

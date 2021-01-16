@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 
+import '../api_routes.dart';
 import 'entities.dart';
 import 'serializer.dart';
 
@@ -47,6 +48,9 @@ class UserModel extends User implements MapSerializer {
     if (data['last_login'] != null)
       lastLogin = DateTime.parse(data['last_login']).toLocal();
 
+    String url = data['photo'];
+    if (url != null && !url.startsWith('https')) url = api_url + url;
+
     return UserModel(
       id: data['id'],
       username: data['username'],
@@ -61,7 +65,7 @@ class UserModel extends User implements MapSerializer {
       isSuperUser: data['is_superuser'],
       lastLogin: lastLogin,
       token: data['token'],
-      photo: data['photo'],
+      photo: url,
       github: data['github'],
       twitter: data['twitter'],
       numberPhone: data['number_phone'],

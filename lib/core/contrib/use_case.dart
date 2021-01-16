@@ -8,6 +8,10 @@ abstract class UseCase<Type, Params> {
   Future<Either<Failure, Type>> call(Params params);
 }
 
+abstract class StreamUseCase<Type, Params> {
+  Stream<Type> call(Params params);
+}
+
 class NoParams {}
 
 abstract class Pagination extends Equatable {
@@ -29,7 +33,7 @@ class LimitOffsetPagination extends Pagination {
 }
 
 class IdLimitOffsetParams extends LimitOffsetPagination {
-  final int id;
+  final dynamic id;
 
   const IdLimitOffsetParams({
     this.id,

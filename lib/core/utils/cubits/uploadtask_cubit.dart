@@ -12,7 +12,6 @@ part 'uploadtask_state.dart';
 
 class UploadtaskCubit extends Cubit<UploadtaskState> {
   final Dio _dio;
-  final AuthenticationManager _authManager;
 
   UploadtaskCubit({
     Dio dio,
@@ -20,7 +19,6 @@ class UploadtaskCubit extends Cubit<UploadtaskState> {
   })  : assert(dio != null),
         assert(authManager != null),
         _dio = dio,
-        _authManager = authManager,
         super(UploadtaskInitial()) {
     _dio.options = BaseOptions(
       headers: {
@@ -30,25 +28,39 @@ class UploadtaskCubit extends Cubit<UploadtaskState> {
     );
   }
 
-  void uploadImage(File image) async {
-    final res = await _dio.post(
-      api.image_url,
-      data: FormData.fromMap({
-        'image': MultipartFile.fromFileSync(image.path),
-      }),
-      onSendProgress: (int sent, int total) {
-        double progress = sent / total;
-        emit(UploadtaskProgress(progress * 100));
-      },
-    );
-
-    if (res.statusCode != 201)
+  void uploadImage(File image, {bool isUserImage = false}) async {
+    Response res;
+    if (isUserImage) {
+      res = await _dio.patch(
+        api.user_photo_url,
+        data: FormData.fromMap({
+          'photo': MultipartFile.fromFileSync(image.path),
+        }),
+        onSendProgress: (int sent, int total) {
+          double progress = sent / total;
+          emit(UploadtaskProgress(progress));
+        },
+      );
+    } else {
+      res = await _dio.post(
+        api.image_url,
+        data: FormData.fromMap({
+          'image': MultipartFile.fromFileSync(image.path),
+        }),
+        onSendProgress: (int sent, int total) {
+          double progress = sent / total;
+          emit(UploadtaskProgress(progress));
+        },
+      );
+    }
+    if ((isUserImage && res.statusCode != 200) ||
+        (!isUserImage && res.statusCode != 201))
       emit(
-        UploadtaskFailed(UploadImageFailure(res.data)),
+        UploadtaskFailed(UploadImageFailure('${res.data}')),
       );
     else
       emit(
-        UploadtaskSuccess(res.data['image']),
+        UploadtaskSuccess(res.data[isUserImage ? 'photo' : 'image']),
       );
   }
 }
