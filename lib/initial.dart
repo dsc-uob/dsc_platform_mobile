@@ -1,9 +1,5 @@
 import 'package:data_connection_checker/data_connection_checker.dart';
 import 'package:dio/dio.dart';
-import 'package:dsc_platform/features/media/data/data_sources.dart';
-import 'package:dsc_platform/features/media/data/repositories_impl.dart';
-import 'package:dsc_platform/features/media/domain/usecases.dart';
-import 'package:dsc_platform/features/media/presentation/blocs/image/image_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +8,15 @@ import 'core/utils/authentication_manager.dart';
 import 'core/utils/cache_manager.dart';
 import 'core/utils/cubits/uploadtask_cubit.dart';
 import 'core/utils/network_info.dart';
+import 'features/chat/data/datasources.dart';
+import 'features/chat/data/repositories_impl.dart';
+import 'features/chat/domain/usecases.dart';
+import 'features/chat/presentation/blocs/chat_message/chat_message_bloc.dart';
+import 'features/chat/presentation/blocs/chat_session/chat_session_bloc.dart';
+import 'features/media/data/data_sources.dart';
+import 'features/media/data/repositories_impl.dart';
+import 'features/media/domain/usecases.dart';
+import 'features/media/presentation/blocs/image/image_bloc.dart';
 import 'features/post/data/data_sources.dart';
 import 'features/post/data/repositories_impl.dart';
 import 'features/post/domain/usecases.dart';
@@ -29,6 +34,7 @@ import 'features/user/presentation/blocs/register/register_bloc.dart';
 import 'features/user/presentation/blocs/user/user_bloc.dart';
 
 final sl = GetIt.instance;
+
 Future<void> init() async {
   //! Components - Dependent
   final pref = await SharedPreferences.getInstance();
@@ -84,6 +90,12 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => ImageRemoteDataSourceImpl(sl(), sl()),
   );
+  sl.registerLazySingleton(
+    () => RemoteChatSessionDataSourceImpl(sl(), sl()),
+  );
+  sl.registerLazySingleton(
+    () => RemoteInChatSessionDataSourceImpl(sl(), sl()),
+  );
 
   //! Repositories
   sl.registerLazySingleton(
@@ -116,6 +128,18 @@ Future<void> init() async {
       networkInfo: sl<NetworkInfoImpl>(),
       localDataSource: sl<ImageLocalDataSourceImpl>(),
       remoteDataSource: sl<ImageRemoteDataSourceImpl>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => InChatSessionRepositoryImpl(
+      networkInfo: sl<NetworkInfoImpl>(),
+      remoteDataSource: sl<RemoteInChatSessionDataSourceImpl>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => ChatSessionRepositoryImpl(
+      networkInfo: sl<NetworkInfoImpl>(),
+      remoteDataSource: sl<RemoteChatSessionDataSourceImpl>(),
     ),
   );
 
@@ -180,6 +204,24 @@ Future<void> init() async {
   sl.registerLazySingleton(
     () => DeleteUserImage(sl<ImageRepositoryImpl>()),
   );
+  sl.registerLazySingleton(
+    () => GetSessions(
+      sl<ChatSessionRepositoryImpl>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => ListenToSessionMessages(
+      sl<InChatSessionRepositoryImpl>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => SendMessage(
+      sl<InChatSessionRepositoryImpl>(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => GetMessages(sl<InChatSessionRepositoryImpl>()),
+  );
 
   //! Blocs
   sl.registerFactory(
@@ -202,7 +244,16 @@ Future<void> init() async {
     ),
   );
   sl.registerFactory(
-    () => PostBloc(
+    () => GeneralPostBloc(
+      getPosts: sl(),
+      getUserPosts: sl(),
+      createPost: sl(),
+      updatePost: sl(),
+      deletePost: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => UserPostBloc(
       getPosts: sl(),
       getUserPosts: sl(),
       createPost: sl(),
@@ -221,6 +272,18 @@ Future<void> init() async {
   );
   sl.registerFactory(
     () => ImageBloc(sl(), sl()),
+  );
+  sl.registerFactory(
+    () => ChatMessageBloc(
+      sendMessage: sl(),
+      getMessages: sl(),
+      listenToSessionMessages: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => ChatSessionBloc(
+      getSessions: sl(),
+    ),
   );
 
   //! Cubit

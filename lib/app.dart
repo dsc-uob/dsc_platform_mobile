@@ -7,6 +7,8 @@ import 'core/db/entities.dart';
 import 'core/utils/app_localizations.dart';
 import 'core/utils/dsc_route.dart' as route;
 import 'core/utils/strings.dart';
+import 'features/chat/presentation/blocs/chat_session/chat_session_bloc.dart';
+import 'features/chat/presentation/pages/list_chat_session_page.dart';
 import 'features/media/presentation/blocs/image/image_bloc.dart';
 import 'features/post/presentation/blocs/post/post_bloc.dart';
 import 'features/post/presentation/pages/post_page.dart';
@@ -51,6 +53,16 @@ class DSCApp extends StatelessWidget {
             selectionColor: statusBarColor.withOpacity(0.2),
             selectionHandleColor: statusBarColor,
           ),
+          popupMenuTheme: PopupMenuThemeData(
+            elevation: 15,
+            color: primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            textStyle: TextStyle(
+              color: cardColor,
+            ),
+          ),
           primaryTextTheme: TextTheme(
             subtitle1: TextStyle(
               color: Colors.white70,
@@ -92,6 +104,22 @@ class DSCApp extends StatelessWidget {
                   BlocProvider(
                     create: (_) => sl<UserBloc>()..add(FetchMyAccount()),
                   ),
+                  BlocProvider<GeneralPostBloc>(
+                    create: (context) =>
+                        sl<GeneralPostBloc>()..add(FetchPosts()),
+                  ),
+                  BlocProvider<ChatSessionBloc>(
+                    create: (context) =>
+                        sl<ChatSessionBloc>()..add(FetchChatSession()),
+                  ),
+                  BlocProvider<UserPostBloc>(
+                    create: (context) =>
+                        sl<UserPostBloc>()..add(FetchUserPosts(state.user.id)),
+                  ),
+                  BlocProvider<ImageBloc>(
+                    create: (context) =>
+                        sl<ImageBloc>()..add(FetchImages(state.user.id)),
+                  ),
                 ],
                 child: HomeScreen(
                   user: state.user,
@@ -131,23 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     currentPage = 0;
     screens = [
-      BlocProvider<PostBloc>(
-        create: (context) => sl<PostBloc>()..add(FetchPosts()),
-        child: PostPage(),
-      ),
-      Container(
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider<PostBloc>(
-              create: (context) => sl<PostBloc>()..add(FetchUserPosts(user.id)),
-            ),
-            BlocProvider<ImageBloc>(
-              create: (context) => sl<ImageBloc>()..add(FetchImages(user.id)),
-            ),
-          ],
-          child: AccountPage(),
-        ),
-      ),
+      PostPage(),
+      ListChatSessionPage(),
+      AccountPage(),
     ];
   }
 
@@ -161,6 +175,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             label: Strings.posts,
             icon: Icon(Icons.description),
+          ),
+          BottomNavigationBarItem(
+            label: 'Chats',
+            icon: Icon(Icons.chat),
           ),
           BottomNavigationBarItem(
             label: Strings.myAccount,

@@ -9,6 +9,8 @@ abstract class PostsEvent extends Equatable {
 
 class FetchPosts extends PostsEvent {}
 
+class RefershPosts extends PostsEvent{}
+
 class FetchUserPosts extends PostsEvent {
   final int user;
 

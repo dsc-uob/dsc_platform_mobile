@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -12,7 +13,7 @@ import '../../../domain/usecases.dart';
 part 'post_event.dart';
 part 'post_state.dart';
 
-class PostBloc extends Bloc<PostsEvent, PostState> {
+abstract class PostBloc extends Bloc<PostsEvent, PostState> {
   final GetPosts getPosts;
   final GetUserPosts getUserPosts;
   final CreatePost createPost;
@@ -20,14 +21,14 @@ class PostBloc extends Bloc<PostsEvent, PostState> {
   final DeletePost deletePost;
 
   PostBloc({
-    this.getPosts,
-    this.getUserPosts,
-    this.createPost,
-    this.updatePost,
-    this.deletePost,
+    @required this.getPosts,
+    @required this.getUserPosts,
+    @required this.createPost,
+    @required this.updatePost,
+    @required this.deletePost,
   }) : super(LoadPosts());
 
-  bool _isMaxPost = false;
+  bool hasReachedMax = false;
 
   @override
   Stream<PostState> mapEventToState(
@@ -35,8 +36,10 @@ class PostBloc extends Bloc<PostsEvent, PostState> {
   ) async* {
     final currentState = state;
 
-    if (event is FetchPosts && !_isMaxPost) yield* _fetchPostsToState();
-    if (event is FetchUserPosts && !_isMaxPost)
+    if (event is RefershPosts) yield* _fetchPostsToState(refersh: true);
+
+    if (event is FetchPosts && !hasReachedMax) yield* _fetchPostsToState();
+    if (event is FetchUserPosts && !hasReachedMax)
       yield* _fetchUserPostsToState(event.user);
 
     if (event is CreatePostEvent && currentState is PostsSuccessfulLoaded) {
@@ -73,12 +76,12 @@ class PostBloc extends Bloc<PostsEvent, PostState> {
   }
 
   /// Procces of convert posts to state.
-  Stream<PostState> _fetchPostsToState() async* {
+  Stream<PostState> _fetchPostsToState({bool refersh = false}) async* {
     final currentState = state;
     int offset;
     List<Post> posts = <Post>[];
 
-    if (currentState is PostsSuccessfulLoaded) {
+    if (currentState is PostsSuccessfulLoaded && !refersh) {
       offset = currentState.posts.length;
       posts = currentState.posts;
     } else {
@@ -95,7 +98,7 @@ class PostBloc extends Bloc<PostsEvent, PostState> {
     yield res.fold(
       (l) => PostsFailedLoad(l),
       (r) {
-        _isMaxPost = r.length == 0;
+        hasReachedMax = r.length < 10;
         return PostsSuccessfulLoaded(posts + r);
       },
     );
@@ -123,9 +126,41 @@ class PostBloc extends Bloc<PostsEvent, PostState> {
     yield res.fold(
       (l) => PostsFailedLoad(l),
       (r) {
-        _isMaxPost = r.length == 0;
+        hasReachedMax = r.length < 10;
         return PostsSuccessfulLoaded(posts + r);
       },
     );
   }
+}
+
+class GeneralPostBloc extends PostBloc {
+  GeneralPostBloc({
+    final GetPosts getPosts,
+    final GetUserPosts getUserPosts,
+    final CreatePost createPost,
+    final UpdatePost updatePost,
+    final DeletePost deletePost,
+  }) : super(
+          createPost: createPost,
+          updatePost: updatePost,
+          deletePost: deletePost,
+          getUserPosts: getUserPosts,
+          getPosts: getPosts,
+        );
+}
+
+class UserPostBloc extends PostBloc {
+  UserPostBloc({
+    final GetPosts getPosts,
+    final GetUserPosts getUserPosts,
+    final CreatePost createPost,
+    final UpdatePost updatePost,
+    final DeletePost deletePost,
+  }) : super(
+          createPost: createPost,
+          updatePost: updatePost,
+          deletePost: deletePost,
+          getUserPosts: getUserPosts,
+          getPosts: getPosts,
+        );
 }

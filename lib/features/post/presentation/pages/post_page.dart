@@ -21,14 +21,14 @@ class _PostPageState extends State<PostPage> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          BlocProvider.of<PostBloc>(context).add(
-            FetchPosts(),
+          BlocProvider.of<GeneralPostBloc>(context).add(
+            RefershPosts(),
           );
 
           return await Future.delayed(Duration(seconds: 3));
         },
-        child: BlocBuilder<PostBloc, PostState>(
-          cubit: BlocProvider.of<PostBloc>(context),
+        child: BlocBuilder<GeneralPostBloc, PostState>(
+          cubit: BlocProvider.of<GeneralPostBloc>(context),
           builder: (context, state) {
             if (state is PostsSuccessfulLoaded) {
               return ListView.separated(
